@@ -6,7 +6,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-
 class Connexion
 {
 public:
@@ -17,12 +16,12 @@ public:
 
 
     void connect();
-    std::vector<std::string> execute(std::string command);
+    void execute(std::vector<std::string> &results, std::string command);
     void exit();
 
 private:
     std::ifstream properties_file;
-    std::string file_name, delimiter = "=";
+    std::string file_name, delimiter;
     PGconn *conn;
 };
 
