@@ -43,9 +43,6 @@ int main(int argc, char *argv[])
     const char *conninfo;
         PGconn     *conn;
         PGresult   *res;
-        int         nFields;
-        int         i,
-                    j;
     infos = "hostaddr="+host+" port="+port+" dbname="+db_name+" user="+login+" password="+password;
     conninfo = infos.c_str();
     conn = PQconnectdb(conninfo);
