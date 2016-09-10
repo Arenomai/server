@@ -1,19 +1,20 @@
 #include <iostream>
 #include <fstream>
-#include <libpq/libpq-fs.h>
-#include <libpq-events.h>
-#include <libpq-fe.h>
+#include "Connexion.hpp"
 
 using namespace std;
 
-int main(int argc, char *argv[])
+int main()
 {
   ifstream properties_file;
   string line, current_line, file_name, delimiter = "=", value, host, port, db_name, login, password, infos;
   int line_number, i;
-  file_name = "properties.txt";
-  properties_file.open(file_name);
+  const char *conninfo; // création des informations nécessaires à la db
+      PGconn     *conn;
+      PGresult   *res;
 
+   file_name = "properties.txt";
+   properties_file.open(file_name);
    if(properties_file.is_open()) // récupération des informations de connexion
    {
       while(getline(properties_file,line))
@@ -40,10 +41,6 @@ int main(int argc, char *argv[])
     else{
         cout << "Unable to open file "+file_name+" while trying to write in it";
     }
-
-    const char *conninfo; // création des informations nécessaires à la db
-        PGconn     *conn;
-        PGresult   *res;
     infos = "hostaddr="+host+" port="+port+" dbname="+db_name+" user="+login+" password="+password;
     conninfo = infos.c_str();
     conn = PQconnectdb(conninfo); // lancement de la connexion
@@ -61,7 +58,7 @@ int main(int argc, char *argv[])
             printf("%-15s", PQfname(res, i));
             cout << "\n\n";
         }
-
+        PQfinish(conn); //fermeture propre de la connexion
     }
     return 0;
 }
