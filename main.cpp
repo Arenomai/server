@@ -8,19 +8,33 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    ifstream properties_file;
-    string line, current_line, file_name, delimiter = "=", value, host, port, db_name, login, password, infos;
-    int i = 0;
-    file_name = "properties.txt";
-    properties_file.open(file_name);
+  ifstream properties_file;
+  string line, current_line, file_name, delimiter = "=", value, host, port, db_name, login, password, infos;
+  file_name = "properties.txt";
+  properties_file.open(file_name);
 
-    if(properties_file.is_open())
-    {
-        while(getline(properties_file,line))
-        {
-            current_line = line.substr(0,line.find(delimiter));
-            value = line.substr(line.find(delimiter)+1,line.find('\0'));
+   if(properties_file.is_open())
+   {
+      while(getline(properties_file,line))
+      {
+        current_line = line.substr(0,line.find(delimiter));
+        value = line.substr(line.find(delimiter)+1,line.find('\0'));
+        if(current_line =="host"){
+            host = value;
         }
+        if(current_line == "port"){
+            port = value;
+        }
+        if(current_line == "db_name"){
+            db_name = value;
+        }
+        if(current_line == "login"){
+            login = value;
+        }
+        if(current_line == "password"){
+            password = value;
+        }
+      }
     }
     else{
         cout << "Unable to open file "+file_name+" while trying to write in it";
