@@ -3,24 +3,24 @@
 #include <libpq-events.h>
 #include <libpq-fe.h>
 #include <iostream>
-
+#include <fstream>
+#include <vector>
 using namespace std;
 
-Connexion::Connexion()
-{
+
     Connexion::Connexion()
-    {
+        {
         this->file_name = "properties.txt";
         this->delimiter = "=";
     }
 
-    Connexion::Connexion(path)
+    Connexion::Connexion(string path)
     {
         this->file_name = path;
         this->delimiter = "=";
     }
 
-    Connexion::Connexion(path,separation){
+    Connexion::Connexion(string path,string separation){
         this->file_name = path;
         this->delimiter = separation;
     }
@@ -67,21 +67,19 @@ Connexion::Connexion()
              }
     }
 
-    string[] Connexion::execute(command)
+    vector<string> Connexion::execute(string command)
     {
         PGresult   *res;
-
-        res = PQexec(this->conn, command); // execution de la requête SQL
-        line_number = PQnfields(res);
-        string results[line_number];
+        res = PQexec(conn, command.c_str()); // execution de la requête SQL
+        int line_number = PQnfields(res), i;
+        vector<string> results;
         for(i=0;i<line_number;i++)
         {
-            result[i] =PQfname(res, i);
+            results.push_back(PQfname(res, i));
         }
-        return result;
+        return results;
     }
     void Connexion::exit()
         {
-        PQfinish(this->conn);
+        PQfinish(conn);
     }
-}

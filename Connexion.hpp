@@ -4,7 +4,8 @@
 #include <libpq-events.h>
 #include <libpq-fe.h>
 #include <iostream>
-
+#include <fstream>
+#include <vector>
 
 class Connexion
 {
@@ -12,11 +13,12 @@ public:
         // Constructeurs
     Connexion();
     Connexion(std::string path);
+    Connexion(std::string path, std::string separation);
 
 
-    int connect();
-    int execute(std::string command);
-    int exit();
+    void connect();
+    std::vector<std::string> execute(std::string command);
+    void exit();
 
 private:
     std::ifstream properties_file;
