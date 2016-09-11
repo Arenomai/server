@@ -1,5 +1,5 @@
-#ifndef Connection_HPP
-#define Connection_HPP
+#ifndef CONNECTION_HPP
+#define CONNECTION_HPP
 
 #include <fstream>
 #include <iostream>
@@ -24,4 +24,4 @@ private:
     PGconn *conn;
 };
 
-#endif // Connection_HPP
+#endif // CONNECTION_HPP
