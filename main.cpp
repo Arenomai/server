@@ -4,17 +4,16 @@
 
 using namespace std;
 
-int main()
-{
-    int i;
-    Connexion conn = Connexion();
+int main(int argc, char **argv) {
+    (void) argc; (void) argv;
+
+    Connexion conn;
     conn.connect();
-    vector<string> results;
-    conn.execute(results, "select * from test");
-    for(i=0;i<results.size();i++)
-    {
-    cout << results.at(i)+"\n";
+    vector<string> results = conn.execute("select * from test");
+    for (unsigned int i = 0; i < results.size(); ++i) {
+        cout << results[i] << endl;
     }
     conn.exit();
+
     return 0;
 }
