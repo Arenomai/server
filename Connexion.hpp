@@ -1,22 +1,21 @@
 #ifndef CONNEXION_HPP
 #define CONNEXION_HPP
-#include <libpq/libpq-fs.h>
-#include <libpq-events.h>
-#include <libpq-fe.h>
-#include <iostream>
+
 #include <fstream>
+#include <iostream>
 #include <vector>
-class Connexion
-{
+
+#include <libpq-fe.h>
+
+class Connexion {
 public:
         // Constructeurs
     Connexion();
-    Connexion(std::string path);
-    Connexion(std::string path, std::string separation);
-
+    Connexion(const std::string &path);
+    Connexion(const std::string &path, const std::string &separation);
 
     void connect();
-    void execute(std::vector<std::string> &results, std::string command);
+    std::vector<std::string> execute(const std::string &command);
     void exit();
 
 private:
