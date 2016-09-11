@@ -1,4 +1,4 @@
-#include "Connexion.hpp"
+#include "Connection.hpp"
 
 #include <sstream>
 
@@ -7,26 +7,26 @@
 
 using namespace std;
 
-Connexion::Connexion() {
+Connection::Connection() {
     file_name = "properties.txt";
     delimiter = "=";
 }
 
-Connexion::Connexion(const string &path) {
+Connection::Connection(const string &path) {
     file_name = path;
     delimiter = "=";
 }
 
-Connexion::Connexion(const string &path, const string &separation){
+Connection::Connection(const string &path, const string &separation){
     file_name = path;
     delimiter = separation;
 }
 
-void Connexion::connect() {
+void Connection::connect() {
     string line, current_line, value, host, port, db_name, login, password, infos;
     const char* conninfo;
     properties_file.open(file_name);
-    if (properties_file.is_open()) { // récupération des informations de connexion
+    if (properties_file.is_open()) { // récupération des informations de Connection
         while (getline(properties_file,line)) {
             current_line = line.substr(0,line.find(delimiter));
             value = line.substr(line.find(delimiter)+1,line.find('\0'));
@@ -51,7 +51,7 @@ void Connexion::connect() {
     }
     infos = "hostaddr="+host+" port="+port+" dbname="+db_name+" user="+login+" password="+password;
     conninfo = infos.c_str();
-    conn = PQconnectdb(conninfo); // lancement de la connexion
+    conn = PQconnectdb(conninfo); // lancement de la Connection
     if (PQstatus(conn) != CONNECTION_OK) {
         cout << "Connection error\n";
     } else {
@@ -59,7 +59,7 @@ void Connexion::connect() {
     }
 }
 
-std::vector<std::string> Connexion::execute(const string &command) {
+std::vector<std::string> Connection::execute(const string &command) {
     std::vector<std::string> results;
     PGresult *res = PQexec(conn, command.c_str()); // execution de la requête SQL
     int column_count = PQnfields(res);
@@ -81,7 +81,7 @@ std::vector<std::string> Connexion::execute(const string &command) {
     return results;
 }
 
-void Connexion::exit() {
+void Connection::exit() {
     PQfinish(conn);
     cout << "Connection closed";
 }

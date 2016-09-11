@@ -1,7 +1,9 @@
 project(ptut)
 cmake_minimum_required(VERSION 2.8)
 aux_source_directory(. SRC_LIST)
-add_executable(${PROJECT_NAME} main.cpp Connexion.cpp)
+add_executable(${PROJECT_NAME}
+    main.cpp
+    Connection.cpp)
 target_link_libraries(${PROJECT_NAME} pq)
 file(GLOB_RECURSE FILELIST "*")
 add_custom_target(files SOURCES ${FILELIST})

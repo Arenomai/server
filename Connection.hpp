@@ -1,5 +1,5 @@
-#ifndef CONNEXION_HPP
-#define CONNEXION_HPP
+#ifndef Connection_HPP
+#define Connection_HPP
 
 #include <fstream>
 #include <iostream>
@@ -7,12 +7,12 @@
 
 #include <libpq-fe.h>
 
-class Connexion {
+class Connection {
 public:
         // Constructeurs
-    Connexion();
-    Connexion(const std::string &path);
-    Connexion(const std::string &path, const std::string &separation);
+    Connection();
+    Connection(const std::string &path);
+    Connection(const std::string &path, const std::string &separation);
 
     void connect();
     std::vector<std::string> execute(const std::string &command);
@@ -24,4 +24,4 @@ private:
     PGconn *conn;
 };
 
-#endif // CONNEXION_HPP
+#endif // Connection_HPP

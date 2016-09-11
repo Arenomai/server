@@ -1,13 +1,15 @@
-#include <iostream>
 #include <fstream>
-#include "Connexion.hpp"
+#include <iostream>
+#include <vector>
+
+#include "Connection.hpp"
 
 using namespace std;
 
 int main(int argc, char **argv) {
     (void) argc; (void) argv;
 
-    Connexion conn;
+    Connection conn;
     conn.connect();
     vector<string> results = conn.execute("select * from test");
     for (unsigned int i = 0; i < results.size(); ++i) {
