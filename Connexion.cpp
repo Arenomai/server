@@ -8,7 +8,7 @@ using namespace std;
 
 
     Connexion::Connexion()
-        {
+    {
         file_name = "properties.txt";
         delimiter = "=";
     }
