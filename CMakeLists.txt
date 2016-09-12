@@ -8,5 +8,6 @@ add_executable(${CMAKE_PROJECT_NAME}
     main.cpp
     Connection.cpp
     World.cpp
+    Entity.cpp
 )
 target_link_libraries(${CMAKE_PROJECT_NAME} pq)
