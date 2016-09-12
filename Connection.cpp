@@ -1,7 +1,6 @@
 #include "Connection.hpp"
 
 #include <sstream>
-
 #include <libpq/libpq-fs.h>
 #include <libpq-events.h>
 
@@ -24,6 +23,7 @@ Connection::Connection(const string &path, const string &separation){
 
 void Connection::connect() {
     string line, current_line, value, host, port, db_name, login, password, infos;
+    std::ostringstream oss;
     const char* conninfo;
     properties_file.open(file_name);
     if (properties_file.is_open()) { // récupération des informations de Connection
@@ -49,7 +49,8 @@ void Connection::connect() {
     } else {
         cout << "Unable to open file "+file_name+" while trying to write in it";
     }
-    infos = "hostaddr="+host+" port="+port+" dbname="+db_name+" user="+login+" password="+password;
+    oss << "hostaddr=" << host <<" port="<<port<<" dbname="<<db_name<<" user="<<login<<" password="<<password;
+    infos = oss.str();
     conninfo = infos.c_str();
     conn = PQconnectdb(conninfo); // lancement de la Connection
     if (PQstatus(conn) != CONNECTION_OK) {
