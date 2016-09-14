@@ -12,7 +12,6 @@ public:
         // Constructeurs
     Connection();
     Connection(const std::string &path);
-    Connection(const std::string &path, const std::string &separation);
 
     void connect();
     std::vector<std::string> execute(const std::string &command);
@@ -20,7 +19,7 @@ public:
 
 private:
     std::ifstream properties_file;
-    std::string file_name, delimiter;
+    std::string file_name;
     PGconn *conn;
 };
 
