@@ -9,19 +9,11 @@
 
 using namespace std;
 
-Connection::Connection() {
-    file_name = "properties.txt";
-    delimiter = "=";
+Connection::Connection() : Connection("properties.txt") {
 }
 
 Connection::Connection(const string &path) {
     file_name = path;
-    delimiter = "=";
-}
-
-Connection::Connection(const string &path, const string &separation){
-    file_name = path;
-    delimiter = separation;
 }
 
 void Connection::connect() {
