@@ -1,5 +1,5 @@
-host=10.8.0.1
+hostaddr=10.8.0.1
 port=5432
-db_name=jeu
-login=ptut
+dbname=jeu
+user=ptut
 password=ptut16jbrt

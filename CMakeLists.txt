@@ -6,8 +6,9 @@ add_custom_target(files SOURCES ${FILELIST})
 
 add_executable(${CMAKE_PROJECT_NAME}
     main.cpp
-    Connection.cpp
-    World.cpp
     Entity.cpp
+    Connection.cpp
+    SimpleConfig.cpp
+    World.cpp
 )
 target_link_libraries(${CMAKE_PROJECT_NAME} pq)

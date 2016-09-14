@@ -1,8 +1,11 @@
 #include "Connection.hpp"
 
 #include <sstream>
+
 #include <libpq/libpq-fs.h>
 #include <libpq-events.h>
+
+#include "SimpleConfig.hpp"
 
 using namespace std;
 
@@ -22,41 +25,30 @@ Connection::Connection(const string &path, const string &separation){
 }
 
 void Connection::connect() {
-    string line, current_line, value, host, port, db_name, login, password, infos;
-    std::ostringstream oss;
-    const char* conninfo;
+    SimpleConfig cfg;
     properties_file.open(file_name);
     if (properties_file.is_open()) { // récupération des informations de Connection
-        while (getline(properties_file,line)) {
-            current_line = line.substr(0,line.find(delimiter));
-            value = line.substr(line.find(delimiter)+1,line.find('\0'));
-            if (current_line =="host") {
-                host = value;
-            }
-            if (current_line == "port") {
-                port = value;
-            }
-            if (current_line == "db_name") {
-                db_name = value;
-            }
-            if (current_line == "login") {
-                login = value;
-            }
-            if (current_line == "password") {
-                password = value;
-            }
-        }
+        cfg.parseText(properties_file);
+        properties_file.close();
     } else {
-        cout << "Unable to open file "+file_name+" while trying to write in it";
+        cout << "Unable to open file " << file_name;
     }
-    oss << "hostaddr=" << host <<" port="<<port<<" dbname="<<db_name<<" user="<<login<<" password="<<password;
-    infos = oss.str();
-    conninfo = infos.c_str();
+    std::ostringstream oss;
+    static const std::array<std::string, 6> entries = {{
+      "hostaddr", "host", "port", "dbname", "user", "password"
+    }};
+    for (const std::string &entry : entries) {
+      if (not cfg.entries[entry].empty()) {
+        oss << entry << '=' << cfg.entries[entry] << ' ';
+      }
+    }
+    std::string infos = oss.str();
+    const char *conninfo = infos.c_str();
     conn = PQconnectdb(conninfo); // lancement de la Connection
     if (PQstatus(conn) != CONNECTION_OK) {
-        cout << "Connection error\n";
+        cout << "Connection error: " << PQerrorMessage(conn); // PQerrorMessage already includes \n
     } else {
-        cout << "Connection succeed\n";
+        cout << "Connection succeeded" << std::endl;
     }
 }
 
