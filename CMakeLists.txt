@@ -7,7 +7,7 @@ add_custom_target(files SOURCES ${FILELIST})
 add_executable(${CMAKE_PROJECT_NAME}
     main.cpp
     Entity.cpp
-    Connection.cpp
+    DatabaseConnection.cpp
     SimpleConfig.cpp
     World.cpp
 )
