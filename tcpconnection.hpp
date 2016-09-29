@@ -14,9 +14,9 @@ class TCPconnection
        int socket_desc, client_sock;
 
     public:
-        bool connect(std::string address);
-        bool wait();
-        std::vector<char> read(int dataSize);
+        bool connect();
+        bool accept();
+        std::string read(int dataSize);
         bool disconnect();
         TCPconnection();
 };
