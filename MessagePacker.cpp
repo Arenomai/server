@@ -1,4 +1,4 @@
-#include "MessagePacker.h"
+#include "MessagePacker.hpp"
 #include <iostream>
 
 MessagePacker::MessagePacker()

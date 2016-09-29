@@ -1,6 +1,6 @@
 #include "Entity.hpp"
 #include <iostream>
-#include "Connection.hpp"
+#include "DatabaseConnection.hpp"
 
 Entity::Entity() {
 
