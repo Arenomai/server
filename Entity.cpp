@@ -2,6 +2,5 @@
 #include <iostream>
 #include "DatabaseConnection.hpp"
 
-Entity::Entity() {
-
+Entity::Entity(const std::string id) {
 }

@@ -10,6 +10,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     DatabaseConnection.cpp
     SimpleConfig.cpp
     World.cpp
-    UUID.cpp
+    uuid.cpp
+    tcpconnection.cpp
 )
 target_link_libraries(${CMAKE_PROJECT_NAME} pq)

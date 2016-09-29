@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "DatabaseConnection.hpp"
-
+#include "tcpconnection.hpp"
 using namespace std;
 
 int main(int argc, char **argv) {
@@ -16,6 +16,8 @@ int main(int argc, char **argv) {
         cout << results[i] << endl;
     }
     conn.exit();
+    TCPconnection TCPconn;
+
 
     return 0;
 }
