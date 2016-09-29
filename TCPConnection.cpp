@@ -1,4 +1,4 @@
-#include "tcpconnection.hpp"
+#include "TCPConnection.hpp"
 #include <iostream>
 #include <unistd.h>
 #include <sstream>
