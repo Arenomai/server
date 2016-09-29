@@ -1,18 +1,18 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
-#include "Connection.hpp"
+#include "DatabaseConnection.hpp"
 
 class Entity {
-public:
+private:
     // Constructors
-    Entity();
-    Entity(std::string type, std::string command);
+    Entity(const std::string id);
 
     // Methods
-    std::string getInfos();
-    bool createInDatabase();
-    bool deleteFromDatabase();
+
+
+public:
+
 };
 
 #endif // ENTITY_HPP

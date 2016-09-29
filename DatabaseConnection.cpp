@@ -1,4 +1,4 @@
-#include "Connection.hpp"
+#include "DatabaseConnection.hpp"
 
 #include <sstream>
 
@@ -9,14 +9,14 @@
 
 using namespace std;
 
-Connection::Connection() : Connection("properties.txt") {
+DatabaseConnection::DatabaseConnection() : DatabaseConnection("properties.txt") {
 }
 
-Connection::Connection(const string &path) {
+DatabaseConnection::DatabaseConnection(const string &path) {
     file_name = path;
 }
 
-void Connection::connect() {
+void DatabaseConnection::connect() {
     SimpleConfig cfg;
     properties_file.open(file_name);
     if (properties_file.is_open()) { // récupération des informations de Connection
@@ -44,7 +44,7 @@ void Connection::connect() {
     }
 }
 
-std::vector<std::string> Connection::execute(const string &command) {
+std::vector<std::string> DatabaseConnection::execute(const string &command) {
     std::vector<std::string> results;
     PGresult *res = PQexec(conn, command.c_str()); // execution de la requête SQL
     int column_count = PQnfields(res);
@@ -66,7 +66,7 @@ std::vector<std::string> Connection::execute(const string &command) {
     return results;
 }
 
-void Connection::exit() {
+void DatabaseConnection::exit() {
     PQfinish(conn);
     cout << "Connection closed";
 }

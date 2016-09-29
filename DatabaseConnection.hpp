@@ -7,11 +7,11 @@
 
 #include <libpq-fe.h>
 
-class Connection {
+class DatabaseConnection {
 public:
         // Constructeurs
-    Connection();
-    Connection(const std::string &path);
+    DatabaseConnection();
+    DatabaseConnection(const std::string &path);
 
     void connect();
     std::vector<std::string> execute(const std::string &command);
