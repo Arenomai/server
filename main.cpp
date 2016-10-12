@@ -18,15 +18,19 @@ int main(int argc, char **argv) {
     }
     conn.exit();*/
     TCPconnection TCPconn;
-    TCPconn.connect();
+    if(TCPconn.connect())
+    {
     TCPconn.accept();
-
-    while (result != "j") {
-        result = TCPconn.read(1);
-        cout << result; // << endl;
+    while (result != "exit") {
+        result = TCPconn.read(4);
+        TCPconn.write(result);
+        cout << result;// << endl;
         cout.flush();
     }
     TCPconn.disconnect();
+    }else{
+        cout << "Error : connection could not be created" << endl;
+    }
 
 
     return 0;

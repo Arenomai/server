@@ -17,6 +17,7 @@ class TCPconnection
         bool connect();
         bool accept();
         std::string read(int dataSize);
+        bool write(const std::string &message);
         bool disconnect();
         TCPconnection();
 };

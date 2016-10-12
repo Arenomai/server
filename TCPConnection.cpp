@@ -59,6 +59,16 @@ string TCPconnection::read(int dataSize)
     return client_message;
 }
 
+bool TCPconnection::write(const std::string &message)
+{
+    int wr = send(client_sock , message.c_str(), message.length(), 0);
+    if(wr == -1){
+        cout << "Error while sending data" << endl;
+        return false;
+    }
+    return true;
+}
+
 bool TCPconnection::disconnect()
 {
     close(socket_desc);

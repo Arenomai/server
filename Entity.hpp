@@ -6,7 +6,7 @@
 class Entity {
 private:
     // Constructors
-    Entity(const std::string id);
+    Entity();
 
     // Methods
 
