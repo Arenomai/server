@@ -8,7 +8,7 @@
 #include <cstring>
 
 
-class TCPconnection
+class TCPConnection
 {
     private:
        int socket_desc, client_sock;
@@ -19,7 +19,7 @@ class TCPconnection
         std::string read(int dataSize);
         bool write(const std::string &message);
         bool disconnect();
-        TCPconnection();
+        TCPConnection();
 };
 
 #endif // TCPCONNECTION_H

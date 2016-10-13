@@ -4,11 +4,11 @@
 #include <sstream>
 using namespace std;
 
-TCPconnection::TCPconnection(){
+TCPConnection::TCPConnection(){
     int socket_desc = -1;
 }
 
-bool TCPconnection::connect(){
+bool TCPConnection::connect(){
     int socket_desc = socket(AF_INET, SOCK_STREAM, 0);
     if(socket_desc == -1)
     {
@@ -33,7 +33,7 @@ bool TCPconnection::connect(){
     return true;
 }
 
-bool TCPconnection::accept()
+bool TCPConnection::accept()
 {
     int c;
     struct sockaddr_in client;
@@ -48,28 +48,28 @@ bool TCPconnection::accept()
     return true;
 }
 
-string TCPconnection::read(int dataSize)
+string TCPConnection::read(int dataSize)
 {
     std::string client_message(dataSize, '\0');
     int read_size, read_total = 0;
-    while( (read_size = recv(client_sock , &client_message[read_total] , dataSize, 0)) > 0 ) {
+    while ( (read_size = recv(client_sock , &client_message[read_total] , dataSize, 0)) > 0 ) {
         read_total+=read_size;
         dataSize -= read_size;
     }
     return client_message;
 }
 
-bool TCPconnection::write(const std::string &message)
+bool TCPConnection::write(const std::string &message)
 {
     int wr = send(client_sock , message.c_str(), message.length(), 0);
-    if(wr == -1){
+    if (wr == -1){
         cout << "Error while sending data" << endl;
         return false;
     }
     return true;
 }
 
-bool TCPconnection::disconnect()
+bool TCPConnection::disconnect()
 {
     close(socket_desc);
     close(client_sock);
