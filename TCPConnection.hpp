@@ -8,18 +8,20 @@
 #include <cstring>
 
 
-class TCPConnection
-{
-    private:
-       int socket_desc, client_sock;
+class TCPConnection {
+private:
+    int m_fd;
 
-    public:
-        bool connect();
-        bool accept();
-        std::string read(int dataSize);
-        bool write(const std::string &message);
-        bool disconnect();
-        TCPConnection();
+public:
+    TCPConnection(int fd);
+
+    bool connected() const {
+        return m_fd >= 0;
+    }
+    std::string read(int dataSize);
+    bool write(const std::string &message);
+    bool disconnect();
+
 };
 
 #endif // TCPCONNECTION_H
