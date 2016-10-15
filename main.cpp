@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
         cout << results[i] << endl;
     }
     conn.exit();*/
-    TCPconnection TCPconn;
+    TCPConnection TCPconn;
     if(TCPconn.connect())
     {
     TCPconn.accept();
