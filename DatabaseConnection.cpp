@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include <libpq/libpq-fs.h>
+#include <libpq-fe.h>
 #include <libpq-events.h>
 
 #include "SimpleConfig.hpp"

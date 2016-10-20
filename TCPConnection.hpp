@@ -1,12 +1,7 @@
 #ifndef TCPCONNECTION_H
 #define TCPCONNECTION_H
-#include <sys/socket.h>
-#include <stdlib.h>
-#include <string>
-#include <vector>
-#include <netinet/in.h>
-#include <cstring>
 
+#include <string>
 
 class TCPConnection {
 private:
@@ -14,6 +9,11 @@ private:
 
 public:
     TCPConnection(int fd);
+    TCPConnection(const TCPConnection&) = delete;
+    TCPConnection(TCPConnection&&);
+
+    TCPConnection& operator=(const TCPConnection&) = delete;
+    TCPConnection& operator=(TCPConnection&&);
 
     bool connected() const {
         return m_fd >= 0;
