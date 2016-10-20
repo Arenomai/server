@@ -3,13 +3,13 @@
 #include <vector>
 
 #include "DatabaseConnection.hpp"
-#include "TCPConnection.hpp"
+#include "TCPListener.hpp"
+
 using namespace std;
 
 int main(int argc, char **argv) {
     (void) argc; (void) argv;
 
-     string result;
     /*DatabaseConnection conn;
     conn.connect();
     vector<string> results = conn.execute("select * from test");
@@ -17,20 +17,19 @@ int main(int argc, char **argv) {
         cout << results[i] << endl;
     }
     conn.exit();*/
-    TCPConnection TCPconn;
-    if(TCPconn.connect())
-    {
-    TCPconn.accept();
+
+    string result;
+    TCPListener tcpl;
+    tcpl.listen();
+    TCPConnection tcpc = tcpl.accept();
     while (result != "exit") {
-        result = TCPconn.read(4);
-        TCPconn.write(result);
+        result = tcpc.read(4);
+        tcpc.write(result);
         cout << result;// << endl;
         cout.flush();
     }
-    TCPconn.disconnect();
-    }else{
-        cout << "Error : connection could not be created" << endl;
-    }
+
+    //    cout << "Error : connection could not be created" << endl;
 
 
     return 0;

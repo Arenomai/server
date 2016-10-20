@@ -1,24 +1,19 @@
 #ifndef TCPLISTENER_H
 #define TCPLISTENER_H
-#include <sys/socket.h>
-#include <stdlib.h>
-#include <string>
-#include <vector>
-#include <netinet/in.h>
-#include <cstring>
 
 #include "TCPConnection.hpp"
 
 class TCPListener {
 private:
-    int socket_desc;
-    int m_port;
-    int m_maxPending;
+    int m_fd;
+    uint16_t m_port;
+    int m_max_pending;
 
 public:
     TCPListener();
+    TCPListener(const TCPListener&) = delete;
 
-    bool connect();
+    bool listen();
     TCPConnection accept();
     bool disconnect();
 

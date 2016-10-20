@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-#include <libpq-fe.h>
+typedef struct pg_conn PGconn;
 
 class DatabaseConnection {
 public:

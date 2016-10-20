@@ -1,52 +1,57 @@
-#include "TCPConnection.hpp"
+#include "TCPListener.hpp"
+
+#include <arpa/inet.h>
 #include <iostream>
+#include <stdexcept>
+#include <string>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <unistd.h>
-#include <sstream>
+
 using namespace std;
 
-TCPConnection::TCPConnection() {
-    socket_desc = -1;
-    m_port = 4242;
-    m_maxPending = 3;
+TCPListener::TCPListener() :
+    m_fd(-1),
+    m_port(4242),
+    m_max_pending(3) {
 }
 
-bool TCPConnection::connect() {
+bool TCPListener::listen() {
     int socket_desc = socket(AF_INET, SOCK_STREAM, 0);
-    if(socket_desc == -1)
-    {
+    if (socket_desc == -1) {
         cout << "Error : Socket could not be created" << endl;
     }
     cout << "Socket created" << endl;
 
-    struct sockaddr_in client,server;
-    memset(&server,0,sizeof(server));
+    struct sockaddr_in server;
+    memset(&server, 0, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons(m_port);
-    if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0) {
-        // print the error message
-        cout << "Error : bind failed"<< endl;
-        return false;
+    int bind_ret = ::bind(socket_desc, reinterpret_cast<struct sockaddr*>(&server), sizeof(server));
+    if (bind_ret < 0) {
+        throw std::runtime_error("bind(2) returned " + std::to_string(bind_ret) + ": " +
+            strerror(errno));
     }
-    cout << "Bind success"<< endl;
     m_fd = socket_desc;
-    listen(m_fd, m_maxPending);
+    ::listen(m_fd, m_max_pending);
     return true;
 }
 
-TCPConnection TCPConnection::accept() {
-    int c;
+TCPConnection TCPListener::accept() {
     struct sockaddr_in client;
-    cout << "Waiting for connections" << endl;
-    c = sizeof(struct sockaddr_in);
-    int client_fd = ::accept(m_fd, (struct sockaddr *)&client, (socklen_t*)&c);
+    int c = sizeof(client);
+    int client_fd = ::accept(m_fd, reinterpret_cast<struct sockaddr*>(&client),
+        reinterpret_cast<socklen_t*>(&c));
     if (client_fd < 0) {
-        cout << "Error : accept failed" << endl;
-        return false;
+        throw std::runtime_error("accept(2) returned " + std::to_string(client_fd) + ": " +
+            strerror(errno));
     }
-    return true;
+    return TCPConnection(client_fd);
 }
 
-bool TCPConnection::disconnect() {
-    close(m_fd);
+bool TCPListener::disconnect() {
+    ::close(m_fd);
+    return true;
 }
