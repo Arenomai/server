@@ -69,5 +69,5 @@ std::vector<std::string> DatabaseConnection::execute(const string &command) {
 
 void DatabaseConnection::exit() {
     PQfinish(conn);
-    cout << "Connection closed";
+    cout << "Connection closed" << std::endl;
 }

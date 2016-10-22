@@ -36,6 +36,7 @@ bool TCPConnection::write(const std::string &message) {
         cout << "Error while sending data" << endl;
         return false;
     }
+    //::send(m_fd,"\n",1,0);
     return true;
 }
 
