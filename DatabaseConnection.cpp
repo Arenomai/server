@@ -24,7 +24,7 @@ void DatabaseConnection::connect() {
         cfg.parseText(properties_file);
         properties_file.close();
     } else {
-        cout << "Unable to open file " << file_name;
+        throw std::runtime_error("Unable to open file " + file_name);
     }
     std::ostringstream oss;
     static const std::array<std::string, 6> entries = {{
@@ -39,9 +39,7 @@ void DatabaseConnection::connect() {
     const char *conninfo = infos.c_str();
     conn = PQconnectdb(conninfo); // lancement de la Connection
     if (PQstatus(conn) != CONNECTION_OK) {
-        cout << "Connection error: " << PQerrorMessage(conn); // PQerrorMessage already includes \n
-    } else {
-        cout << "Connection succeeded" << std::endl;
+        throw std::runtime_error("PGconn error: "s + PQerrorMessage(conn));
     }
 }
 
