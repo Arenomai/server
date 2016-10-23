@@ -20,9 +20,9 @@ TCPListener::TCPListener() :
 bool TCPListener::listen() {
     int socket_desc = socket(AF_INET, SOCK_STREAM, 0);
     if (socket_desc == -1) {
-        cout << "Error : Socket could not be created" << endl;
+        throw std::runtime_error("socket(2) returned " + std::to_string(socket_desc) + ": " +
+            strerror(errno));
     }
-    cout << "Socket created" << endl;
 
     struct sockaddr_in server;
     memset(&server, 0, sizeof(server));
