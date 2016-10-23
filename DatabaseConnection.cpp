@@ -17,6 +17,10 @@ DatabaseConnection::DatabaseConnection(const string &path) {
     file_name = path;
 }
 
+DatabaseConnection::~DatabaseConnection() {
+    finish();
+}
+
 void DatabaseConnection::connect() {
     SimpleConfig cfg;
     properties_file.open(file_name);
@@ -65,7 +69,9 @@ std::vector<std::string> DatabaseConnection::execute(const string &command) {
     return results;
 }
 
-void DatabaseConnection::exit() {
-    PQfinish(conn);
-    cout << "Connection closed" << std::endl;
+void DatabaseConnection::finish() {
+    if (conn != nullptr) {
+        PQfinish(conn);
+        conn = nullptr;
+    }
 }
