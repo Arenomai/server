@@ -48,7 +48,7 @@ TCPConnection TCPListener::accept() {
         throw std::runtime_error("accept(2) returned " + std::to_string(client_fd) + ": " +
             strerror(errno));
     }
-    return TCPConnection(client_fd);
+    return TCPConnection(client_fd, client);
 }
 
 bool TCPListener::disconnect() {

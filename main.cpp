@@ -20,6 +20,7 @@ int main(int argc, char **argv) {
     tcpl.listen();
     while (not quit) {
         TCPConnection tcpc = tcpl.accept();
+        cout << "Connected to " << tcpc.address() << ':' << tcpc.port() << endl;
         std::ostringstream oss;
         while (result != ";") {
             result = tcpc.read(1);
@@ -32,11 +33,12 @@ int main(int argc, char **argv) {
         }
         cout << endl;
         oss << endl;
-        if (quit != true) {
+        if (not quit) {
           vector<string> results = conn.execute(oss.str());
           for (unsigned int i = 0; i < results.size(); ++i) {
               tcpc.write(results[i]);
           }
+          cout << "Disconnecting from " << tcpc.address() << ':' << tcpc.port() << endl;
           tcpc.disconnect();
         }
     }
