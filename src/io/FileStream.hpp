@@ -1,6 +1,8 @@
 #ifndef ARN_IO_FILE_STREAM_HPP
 #define ARN_IO_FILE_STREAM_HPP
+
 #include <fstream>
+
 #include "Stream.hpp"
 
 namespace arn {

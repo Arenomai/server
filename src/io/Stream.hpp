@@ -3,7 +3,7 @@
 
 #include <goodform/io.hpp>
 
-#include "../Platform.hpp"
+#include "../platform/Types.hpp"
 
 namespace arn {
 namespace io {

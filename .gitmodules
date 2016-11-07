@@ -1,0 +1,3 @@
+[submodule "ext/goodform"]
+	path = ext/goodform
+	url = https://github.com/ElementW/goodform.git

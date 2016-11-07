@@ -1,7 +1,9 @@
 #include "Stream.hpp"
+
 #include <stdexcept>
 
-namespace Diggler {
+namespace arn {
+namespace io {
 
 void OutStream::writeString(const std::string &str) {
   if (str.size() > UINT16_MAX)
@@ -132,4 +134,5 @@ double InStream::readDouble() {
   return val;
 }
 
+}
 }
