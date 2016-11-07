@@ -5,6 +5,10 @@ endif()
 set(D ${CMAKE_CURRENT_SOURCE_DIR})
 set(SRCS
   ${SRCS}
+  ${D}/io/FileStream.cpp
+  ${D}/io/MemoryStream.cpp
+  ${D}/io/Stream.cpp
+  ${D}/net/Network.cpp
   ${D}/DatabaseConnection.cpp
   ${D}/Entity.cpp
   ${D}/main.cpp
