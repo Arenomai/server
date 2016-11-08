@@ -8,6 +8,9 @@
 
 using namespace std;
 
+namespace arn {
+namespace net {
+
 TCPConnection::TCPConnection(int fd, struct sockaddr_in addr) :
     m_fd(fd),
     m_addr(addr) {
@@ -24,7 +27,7 @@ TCPConnection& TCPConnection::operator=(TCPConnection &&c) {
     return *this;
 }
 
-uint16_t TCPConnection::port() const {
+Port TCPConnection::port() const {
   return m_addr.sin_port;
 }
 
@@ -49,6 +52,16 @@ string TCPConnection::read(int dataSize) {
     return client_message;
 }
 
+std::string TCPConnection::readNonblock(int max_size) {
+    std::string client_message(max_size, '\0');
+    int res = ::recv(m_fd, &client_message[0], max_size, MSG_DONTWAIT);
+    if (res == -1) {
+        throw std::runtime_error("recv(2) returned -1: "s + strerror(errno));
+    }
+    client_message.resize(res);
+    return client_message;
+}
+
 bool TCPConnection::write(const std::string &message) {
     int wr = ::send(m_fd, message.c_str(), message.length(), 0);
     if (wr == -1){
@@ -61,4 +74,7 @@ bool TCPConnection::write(const std::string &message) {
 bool TCPConnection::disconnect() {
     close(m_fd);
     return true;
+}
+
+}
 }

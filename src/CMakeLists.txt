@@ -13,8 +13,8 @@ set(SRCS
   ${D}/Entity.cpp
   ${D}/main.cpp
   ${D}/SimpleConfig.cpp
-  ${D}/TCPConnection.cpp
-  ${D}/TCPListener.cpp
+  ${D}/net/TCPConnection.cpp
+  ${D}/net/TCPListener.cpp
   ${D}/UUID.cpp
   ${D}/World.cpp
   PARENT_SCOPE

@@ -7,6 +7,7 @@
 #include <goodform/variant.hpp>
 
 #include "../io/MemoryStream.hpp"
+#include "Types.hpp"
 
 namespace arn {
 namespace net {
@@ -79,11 +80,6 @@ public:
 
     void writeMsgpack(const goodform::variant&);
 };
-
-class Exception : public std::exception {
-};
-
-using Port = uint16;
 
 }
 }

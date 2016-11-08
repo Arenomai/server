@@ -11,6 +11,9 @@
 
 using namespace std;
 
+namespace arn {
+namespace net {
+
 TCPListener::TCPListener() :
     m_fd(-1),
     m_port(4242),
@@ -51,7 +54,14 @@ TCPConnection TCPListener::accept() {
     return TCPConnection(client_fd, client);
 }
 
+TCPListener::~TCPListener() {
+    disconnect();
+}
+
 bool TCPListener::disconnect() {
     ::close(m_fd);
     return true;
+}
+
+}
 }
