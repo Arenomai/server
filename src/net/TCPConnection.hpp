@@ -1,8 +1,13 @@
-#ifndef TCPCONNECTION_H
-#define TCPCONNECTION_H
+#ifndef ARN_NET_TCPCONNECTION_HPP
+#define ARN_NET_TCPCONNECTION_HPP
 
 #include <arpa/inet.h>
 #include <string>
+
+#include "Types.hpp"
+
+namespace arn {
+namespace net {
 
 class TCPConnection {
 private:
@@ -17,17 +22,25 @@ public:
     TCPConnection& operator=(const TCPConnection&) = delete;
     TCPConnection& operator=(TCPConnection&&);
 
+    int fd() const {
+        return m_fd;
+    }
+
     bool connected() const {
         return m_fd >= 0;
     }
 
-    uint16_t port() const;
+    Port port() const;
     std::string address() const;
 
     std::string read(int dataSize);
+    std::string readNonblock(int max_size);
     bool write(const std::string &message);
     bool disconnect();
 
 };
 
-#endif // TCPCONNECTION_H
+}
+}
+
+#endif /* ARN_NET_TCPCONNECTION_HPP */
