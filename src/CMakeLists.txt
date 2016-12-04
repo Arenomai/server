@@ -9,9 +9,13 @@ set(SRCS
   ${D}/io/MemoryStream.cpp
   ${D}/io/Stream.cpp
   ${D}/net/Network.cpp
+  ${D}/Battle.cpp
+  ${D}/Card.cpp
   ${D}/DatabaseConnection.cpp
   ${D}/Entity.cpp
+  ${D}/EntityContainer.cpp
   ${D}/main.cpp
+  ${D}/Player.cpp
   ${D}/SimpleConfig.cpp
   ${D}/net/TCPConnection.cpp
   ${D}/net/TCPListener.cpp

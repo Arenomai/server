@@ -1,5 +1,6 @@
-#ifndef WORLD_HPP
-#define WORLD_HPP
+#ifndef ARN_WORLD_HPP
+#define ARN_WORLD_HPP
+
 #include "Entity.hpp"
 #include <tuple>
 
@@ -10,4 +11,4 @@ public:
     bool deleteEntity(std::string id);
 };
 
-#endif // WORLD_HPP
+#endif // ARN_WORLD_HPP

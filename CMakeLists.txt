@@ -1,4 +1,4 @@
-project(ptut)
+project(arnserver)
 cmake_minimum_required(VERSION 2.8)
 
 ### Packages
@@ -19,6 +19,7 @@ endif()
 ### Includes
 include_directories(BEFORE
   ${GOODFORM_INCLUDE_DIR}
+  "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 ### Source file globbing
