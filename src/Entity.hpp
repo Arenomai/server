@@ -2,9 +2,12 @@
 #define ENTITY_HPP
 
 #include "DatabaseConnection.hpp"
+#include "UUID.hpp"
 
 class Entity {
 private:
+    UUID m_uuid;
+
     // Constructors
     Entity();
 
@@ -12,7 +15,9 @@ private:
 
 
 public:
-
+    UUID uuid() {
+        return m_uuid;
+    }
 };
 
 #endif // ENTITY_HPP
