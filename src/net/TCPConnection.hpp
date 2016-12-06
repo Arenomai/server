@@ -4,6 +4,7 @@
 #include <arpa/inet.h>
 #include <string>
 
+#include "Network.hpp"
 #include "Types.hpp"
 
 namespace arn {
@@ -13,6 +14,12 @@ class TCPConnection {
 private:
     int m_fd;
     struct sockaddr_in m_addr;
+
+    Message::Header m_header_buffer;
+    uint m_header_received;
+
+    byte *m_msg_buffer;
+    uint m_msg_received, m_msg_size;
 
 public:
     TCPConnection(int fd, struct sockaddr_in addr);
@@ -33,9 +40,11 @@ public:
     Port port() const;
     std::string address() const;
 
-    std::string read(int dataSize);
-    std::string readNonblock(int max_size);
-    bool write(const std::string &message);
+    [[deprecated]] std::string read(int dataSize);
+    [[deprecated]] std::string readNonblock(int max_size);
+    [[deprecated]] void write(const std::string &message);
+    bool read(InMessage&);
+    void write(const OutMessage&);
     bool disconnect();
 
 };

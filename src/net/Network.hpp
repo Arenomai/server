@@ -2,6 +2,7 @@
 #define ARN_NET_NETWORK_HPP
 
 #include <exception>
+#include <limits>
 #include <type_traits>
 
 #include <goodform/variant.hpp>
@@ -18,7 +19,7 @@ enum class MessageType : uint8 {
 
 class Message : public virtual io::MemoryStream {
 protected:
-    friend class Host;
+    friend class TCPConnection;
     MessageType m_type;
     uint8 m_subtype;
 
@@ -29,7 +30,14 @@ protected:
     Message& operator=(const Message&) = delete;
 
 public:
-    static constexpr uint HeaderSize = 2;
+    struct [[gnu::packed]] Header {
+      uint16 data_length;
+      MessageType type;
+      uint8 subtype;
+    };
+    static constexpr uint HeaderSize = sizeof(Header);
+    static constexpr uint MaxTotalSize = std::numeric_limits<uint16>::max();
+    static constexpr uint MaxDataSize = MaxTotalSize - HeaderSize;
 
     virtual ~Message() {}
 
@@ -42,7 +50,7 @@ public:
 
 class InMessage : public Message, public io::InMemoryStream {
 protected:
-    friend class Host;
+    friend class TCPConnection;
     void setType(MessageType type);
     void fromData(const void *data, SizeT);
     void free();
@@ -64,7 +72,7 @@ public:
 
 class OutMessage : public Message, public io::OutMemoryStream {
 protected:
-    friend class Host;
+    friend class TCPConnection;
     mutable uint8 *m_actualData;
     void fit(SizeT) override;
 
