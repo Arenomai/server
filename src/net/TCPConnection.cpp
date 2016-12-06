@@ -62,13 +62,73 @@ std::string TCPConnection::readNonblock(int max_size) {
     return client_message;
 }
 
-bool TCPConnection::write(const std::string &message) {
+void TCPConnection::write(const std::string &message) {
     int wr = ::send(m_fd, message.c_str(), message.length(), 0);
     if (wr == -1){
-        cout << "Error while sending data" << endl;
+        throw std::runtime_error("send(2) returned -1: "s + strerror(errno));
+    }
+}
+
+bool TCPConnection::read(InMessage &msg) {
+    if (m_header_received < Message::HeaderSize) {
+        // Receiving header
+        const size_t want = Message::HeaderSize - m_header_received;
+        int res = ::recv(m_fd, &m_header_buffer, want, MSG_DONTWAIT);
+        if (res < 0) {
+            throw std::runtime_error("recv(2) returned "s + std::to_string(res) + ": " +
+                    strerror(errno));
+        }
+        m_header_received += res;
+        if (m_header_received == Message::HeaderSize) {
+            m_msg_size = Message::HeaderSize + m_header_buffer.data_length;
+            m_msg_buffer = new byte[m_msg_size];
+            m_msg_received = 0;
+            ::memcpy(m_msg_buffer, &m_header_buffer, Message::HeaderSize);
+            m_msg_received += Message::HeaderSize;
+            if (m_header_buffer.data_length) {
+                msg.fromData(m_msg_buffer, m_msg_size);
+                m_msg_buffer = nullptr;
+                m_header_received = 0;
+                return true;
+            }
+        }
+    }
+    if (m_header_received < Message::HeaderSize) {
         return false;
     }
-    return true;
+    int res = ::recv(m_fd, m_msg_buffer, m_msg_size - m_msg_received, MSG_DONTWAIT);
+    if (res < 0) {
+        throw std::runtime_error("recv(2) returned "s + std::to_string(res) + ": " +
+                strerror(errno));
+    }
+    m_msg_received += res;
+    if (m_msg_received == m_msg_size) {
+        msg.fromData(m_msg_buffer, m_msg_size);
+        m_msg_buffer = nullptr;
+        m_header_received = 0;
+        return true;
+    }
+    return false;
+}
+
+void TCPConnection::write(const OutMessage &msg) {
+    if (msg.m_length > Message::MaxDataSize) {
+        throw std::runtime_error("Cannot send a message longer than " +
+            std::to_string(Message::MaxDataSize) + " bytes");
+    }
+    const uint16 msg_length = static_cast<uint16>(msg.m_length);
+    const byte header[Message::HeaderSize] = {
+        static_cast<byte>(msg_length & 0xFF),
+        static_cast<byte>(msg_length >> 8),
+        static_cast<byte>(msg.m_type),
+        msg.m_subtype
+    };
+
+    std::memcpy(msg.m_actualData, header, Message::HeaderSize);
+    int wr = ::send(m_fd, msg.m_actualData, Message::HeaderSize + msg.m_length, 0);
+    if (wr == -1){
+        throw std::runtime_error("send(2) returned -1: "s + strerror(errno));
+    }
 }
 
 bool TCPConnection::disconnect() {

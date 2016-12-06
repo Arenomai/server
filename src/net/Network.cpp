@@ -39,14 +39,14 @@ void InMessage::fromData(const void *data, SizeT len) {
     if (len < HeaderSize) {
         throw std::invalid_argument("Message length is smaller than message header");
     }
-    const uint8 *const bytes = static_cast<const uint8*>(data);
+    const Header *const hdr = static_cast<const Header*>(data);
     free();
     m_cursor = 0;
-    m_length = len;
-    m_type = static_cast<MessageType>(bytes[0]);
-    m_subtype = bytes[1];
+    m_length = len - HeaderSize;
+    m_type = hdr->type;
+    m_subtype = hdr->subtype;
     // m_data/bytes is guaranteed never to be written to, so we can const_cast it
-    m_data = const_cast<uint8*>(bytes) + HeaderSize;
+    m_data = reinterpret_cast<uint8*>(const_cast<void*>(data)) + HeaderSize;
 }
 
 void InMessage::free() {
