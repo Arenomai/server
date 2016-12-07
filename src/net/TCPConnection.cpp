@@ -96,7 +96,7 @@ bool TCPConnection::read(InMessage &msg) {
     if (m_header_received < Message::HeaderSize) {
         return false;
     }
-    int res = ::recv(m_fd, m_msg_buffer, m_msg_size - m_msg_received, MSG_DONTWAIT);
+    int res = ::recv(m_fd, m_msg_buffer + m_msg_received, m_msg_size - m_msg_received, MSG_DONTWAIT);
     if (res < 0) {
         throw std::runtime_error("recv(2) returned "s + std::to_string(res) + ": " +
                 strerror(errno));
