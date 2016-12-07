@@ -85,7 +85,7 @@ bool TCPConnection::read(InMessage &msg) {
             m_msg_received = 0;
             ::memcpy(m_msg_buffer, &m_header_buffer, Message::HeaderSize);
             m_msg_received += Message::HeaderSize;
-            if (m_header_buffer.data_length) {
+            if (m_header_buffer.data_length == 0) {
                 msg.fromData(m_msg_buffer, m_msg_size);
                 m_msg_buffer = nullptr;
                 m_header_received = 0;
