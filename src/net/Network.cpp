@@ -6,8 +6,6 @@
 #include <sstream>
 #include <memory>
 
-#include <enet/enet.h>
-
 #include <goodform/msgpack.hpp>
 
 namespace arn {
