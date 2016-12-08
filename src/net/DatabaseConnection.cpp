@@ -6,7 +6,7 @@
 #include <libpq-fe.h>
 #include <libpq-events.h>
 
-#include "SimpleConfig.hpp"
+#include "../SimpleConfig.hpp"
 
 using namespace std;
 

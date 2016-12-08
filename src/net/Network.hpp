@@ -13,9 +13,35 @@
 namespace arn {
 namespace net {
 
-enum class MessageType : uint8 {
-    Null = 0,
-};
+    enum class MessageType : uint8 {
+        Null = 0,
+        Auth = 1,
+        Inventory = 2,
+        Event = 3,
+        UserAccount = 4
+        //ItemDef = 5, will be added later if we have some time left
+    };
+
+    enum class AuthSubType : uint8 {
+        Denied = 0,
+        Request = 1,
+        Response = 2,
+    };
+
+    enum class UserAccountSubType : uint8 {
+        Register = 0,
+        PassModify = 1,
+    };
+
+    enum class EventSubType : uint8 {
+        Battle = 0,
+        Meeting = 1,
+    };
+
+    enum class Inventory : uint8 {
+        Request = 0,
+        Response = 1
+    };
 
 class Message : public virtual io::MemoryStream {
 protected:

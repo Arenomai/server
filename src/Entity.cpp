@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "DatabaseConnection.hpp"
+#include "net/DatabaseConnection.hpp"
 
 Entity::Entity() {
     m_uuid = UUID::make();
