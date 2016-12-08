@@ -8,10 +8,10 @@ set(SRCS
   ${D}/io/FileStream.cpp
   ${D}/io/MemoryStream.cpp
   ${D}/io/Stream.cpp
+  ${D}/net/DatabaseConnection.cpp
   ${D}/net/Network.cpp
   ${D}/Battle.cpp
   ${D}/Card.cpp
-  ${D}/DatabaseConnection.cpp
   ${D}/Entity.cpp
   ${D}/EntityContainer.cpp
   ${D}/main.cpp
