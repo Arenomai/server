@@ -7,8 +7,9 @@
 
 #include "platform/Types.hpp"
 #include "Card.hpp"
+#include "Entity.hpp"
 
-class Battle {
+class Battle : public Entity{
 public:
     struct BoardBox {
         enum ContentType {
