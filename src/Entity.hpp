@@ -1,7 +1,7 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
-#include "DatabaseConnection.hpp"
+#include "net/DatabaseConnection.hpp"
 #include "UUID.hpp"
 
 class Entity {

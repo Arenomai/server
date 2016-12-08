@@ -12,7 +12,7 @@
 #include <thread>
 #include <unistd.h>
 
-#include "DatabaseConnection.hpp"
+#include "net/DatabaseConnection.hpp"
 #include "net/TCPListener.hpp"
 #include "Notifiable.hpp"
 
