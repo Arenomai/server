@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <utility>
 
 using namespace std;
 
@@ -13,17 +14,25 @@ namespace net {
 
 TCPConnection::TCPConnection(int fd, struct sockaddr_in addr) :
     m_fd(fd),
-    m_addr(addr) {
+    m_addr(addr),
+    m_header_received(0),
+    m_msg_buffer(nullptr),
+    m_msg_received(0),
+    m_msg_size(0) {
 }
 
 TCPConnection::TCPConnection(TCPConnection &&c) {
-    std::swap(m_fd, c.m_fd);
-    std::swap(m_addr, c.m_addr);
+    operator=(std::move(c));
 }
 
 TCPConnection& TCPConnection::operator=(TCPConnection &&c) {
     std::swap(m_fd, c.m_fd);
     std::swap(m_addr, c.m_addr);
+    std::swap(m_header_buffer, c.m_header_buffer);
+    std::swap(m_header_received, c.m_header_received);
+    std::swap(m_msg_buffer, c.m_msg_buffer);
+    std::swap(m_msg_received, c.m_msg_received);
+    std::swap(m_msg_size, c.m_msg_size);
     return *this;
 }
 
@@ -73,10 +82,16 @@ bool TCPConnection::read(InMessage &msg) {
     if (m_header_received < Message::HeaderSize) {
         // Receiving header
         const size_t want = Message::HeaderSize - m_header_received;
-        int res = ::recv(m_fd, &m_header_buffer, want, MSG_DONTWAIT);
+        int res = ::recv(m_fd, reinterpret_cast<byte*>(&m_header_buffer) + m_header_received,
+                want, MSG_DONTWAIT);
         if (res < 0) {
-            throw std::runtime_error("recv(2) returned "s + std::to_string(res) + ": " +
-                    strerror(errno));
+            int err = errno;
+            if (err == EAGAIN || err == EWOULDBLOCK || err == EINTR) {
+                return false;
+            } else {
+                throw std::runtime_error("recv(2) returned "s + std::to_string(res) + ": " +
+                        strerror(err));
+            }
         }
         m_header_received += res;
         if (m_header_received == Message::HeaderSize) {
@@ -89,6 +104,7 @@ bool TCPConnection::read(InMessage &msg) {
                 msg.fromData(m_msg_buffer, m_msg_size);
                 m_msg_buffer = nullptr;
                 m_header_received = 0;
+                m_msg_received = 0;
                 return true;
             }
         }
@@ -98,14 +114,20 @@ bool TCPConnection::read(InMessage &msg) {
     }
     int res = ::recv(m_fd, m_msg_buffer + m_msg_received, m_msg_size - m_msg_received, MSG_DONTWAIT);
     if (res < 0) {
-        throw std::runtime_error("recv(2) returned "s + std::to_string(res) + ": " +
-                strerror(errno));
+        int err = errno;
+        if (err == EAGAIN || err == EWOULDBLOCK || err == EINTR) {
+            return false;
+        } else {
+            throw std::runtime_error("recv(2) returned "s + std::to_string(res) + ": " +
+                    strerror(err));
+        }
     }
     m_msg_received += res;
     if (m_msg_received == m_msg_size) {
         msg.fromData(m_msg_buffer, m_msg_size);
         m_msg_buffer = nullptr;
         m_header_received = 0;
+        m_msg_received = 0;
         return true;
     }
     return false;
