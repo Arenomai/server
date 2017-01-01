@@ -2,6 +2,7 @@
 
 #include <arpa/inet.h>
 #include <iostream>
+#include <netinet/tcp.h>
 #include <stdexcept>
 #include <string>
 #include <string.h>
@@ -51,6 +52,8 @@ TCPConnection TCPListener::accept() {
         throw std::runtime_error("accept(2) returned " + std::to_string(client_fd) + ": " +
             strerror(errno));
     }
+    const int one = 1;
+    setsockopt(client_fd, SOL_TCP, TCP_NODELAY, &one, sizeof(one));
     return TCPConnection(client_fd, client);
 }
 
