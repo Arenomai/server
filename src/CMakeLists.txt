@@ -12,6 +12,7 @@ set(SRCS
   ${D}/net/Network.cpp
   ${D}/Battle.cpp
   ${D}/Card.cpp
+  ${D}/ClientThread.cpp
   ${D}/Entity.cpp
   ${D}/EntityContainer.cpp
   ${D}/main.cpp

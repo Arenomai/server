@@ -1,5 +1,6 @@
 #include "Stream.hpp"
 
+#include <endian.h>
 #include <stdexcept>
 
 namespace arn {
@@ -8,7 +9,7 @@ namespace io {
 void OutStream::writeString(const std::string &str) {
   if (str.size() > UINT16_MAX)
     throw std::length_error("String too long");
-  int len = str.size();
+  uint16 len = static_cast<uint16>(str.size());
   writeU16(len);
   writeData(str.c_str(), len);
 }
@@ -31,9 +32,9 @@ bool InStream::readBool() {
 void OutStream::writeString32(const std::u32string &str) {
   if (str.size() > UINT16_MAX)
     throw std::length_error("String too long");
-  int len = str.size();
+  uint16 len = static_cast<uint16>(str.size());
   writeU16(len);
-  writeData(str.c_str(), len*sizeof(char32));
+  writeData(str.c_str(), len * sizeof(char32));
 }
 std::u32string InStream::readString32() {
   uint16 len = readU16();
@@ -45,57 +46,66 @@ std::u32string InStream::readString32() {
 }
 
 void OutStream::writeI64(int64 i) {
-  writeData(&i, 8);
+  const uint64 in = htobe64(reinterpret_cast<const uint64&>(i));
+  writeData(&in, 8);
 }
 int64 InStream::readI64() {
   int64 val;
   readData(&val, 8);
-  return val;
+  const uint64 valh = be64toh(val);
+  return reinterpret_cast<const int64&>(valh);
 }
 
 void OutStream::writeU64(uint64 i) {
-  writeData(&i, 8);
+  const uint64 in = htobe64(i);
+  writeData(&in, 8);
 }
 uint64 InStream::readU64() {
   uint64 val;
   readData(&val, 8);
-  return val;
+  return be64toh(val);
 }
 
 void OutStream::writeI32(int32 i) {
-  writeData(&i, 4);
+  const uint32 in = htobe32(reinterpret_cast<const uint32&>(i));
+  writeData(&in, 4);
 }
 int32 InStream::readI32() {
   int32 val;
   readData(&val, 4);
-  return val;
+  const uint32 valh = be32toh(val);
+  return reinterpret_cast<const int32&>(valh);
 }
 
 void OutStream::writeU32(uint32 i) {
-  writeData(&i, 4);
+  const uint32 in = htobe32(i);
+  writeData(&in, 4);
 }
 uint32 InStream::readU32() {
   uint32 val;
   readData(&val, 4);
-  return val;
+  return be32toh(val);
 }
 
 void OutStream::writeI16(int16 i) {
-  writeData(&i, 2);
+  const uint16 in = htobe16(reinterpret_cast<const uint16&>(i));
+  writeData(&in, 2);
 }
 int16 InStream::readI16() {
   int16 val;
   readData(&val, 2);
-  return val;
+  const uint16 valh = be16toh(val);
+  return reinterpret_cast<const int16&>(valh);
 }
 
 void OutStream::writeU16(uint16 i) {
-  writeData(&i, 2);
+  const uint16 in = htobe16(i);
+  writeData(&in, 2);
 }
 uint16 InStream::readU16() {
   uint16 val;
   readData(&val, 2);
-  return val;
+  return be16toh(val);
 }
 
 void OutStream::writeI8(int8 i) {
@@ -117,21 +127,27 @@ uint8 InStream::readU8() {
 }
 
 void OutStream::writeFloat(float f) {
-  writeData(&f, sizeof(float));
+  union { float f; uint32 u; } cvt = { f };
+  const uint32 un = htobe32(cvt.u);
+  writeData(&un, sizeof(float));
 }
 float InStream::readFloat() {
-  float val;
-  readData(&val, sizeof(float));
-  return val;
+  uint32 un;
+  readData(&un, sizeof(float));
+  union { uint32 u; float f; } cvt = { be32toh(un) };
+  return cvt.f;
 }
 
 void OutStream::writeDouble(double d) {
-  writeData(&d, sizeof(double));
+  union { double d; uint64 u; } cvt = { d };
+  const uint64 un = htobe64(cvt.u);
+  writeData(&un, sizeof(double));
 }
 double InStream::readDouble() {
-  double val;
-  readData(&val, sizeof(double));
-  return val;
+  uint64 un;
+  readData(&un, sizeof(double));
+  union { uint64 u; double d; } cvt = { be64toh(un) };
+  return cvt.d;
 }
 
 }
