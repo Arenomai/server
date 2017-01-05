@@ -13,6 +13,7 @@ set(GOODFORM_LIBRARY goodform-static)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(goodform
+  FOUND_VAR goodform_FOUND
   REQUIRED_VARS GOODFORM_INCLUDE_DIR GOODFORM_LIBRARY)
 
 mark_as_advanced(GOODFORM_INCLUDE_DIR GOODFORM_LIBRARY)
