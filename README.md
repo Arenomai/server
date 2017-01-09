@@ -1,7 +1,9 @@
-# tests
+# ARN Server
 
-Repository dedicated to tests before implementations in the real project.
+Server repository.
 
-Tests already done :
-    - database connexion (fully working).
-    - TCP connection (fully working). 
+Working implementations :
+    - Database connection.
+    - TCP connection. 
+    - MessagePack.
+    - Auth.

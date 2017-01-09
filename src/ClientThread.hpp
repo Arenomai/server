@@ -23,7 +23,7 @@ struct ClientThreadEvent {
 
 class ClientThread : public Notifiable<ClientThreadEvent> {
 private:
-    void processMessage(net::InMessage&);
+    void processMessage(net::InMessage&,net::TCPConnection&);
 
 public:
     std::thread thread;

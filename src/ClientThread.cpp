@@ -49,7 +49,7 @@ void ClientThread::run() {
                 client_asked_disconnect = true;
             } else if ((epevt.events & EPOLLIN) != 0) {
                 while (tcpc.read(msg)) {
-                    processMessage(msg);
+                    processMessage(msg, tcpc);
                 }
             }
         } else if (epevt.data.fd == evt_fd) {
@@ -79,15 +79,61 @@ void ClientThread::start() {
     thread = std::thread(&ClientThread::run, this);
 }
 
-void ClientThread::processMessage(net::InMessage &msg) {
+void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
     std::cout << "InMessage { type = " << static_cast<uint>(msg.getType()) <<
                  ", subtype = " << static_cast<uint>(msg.getSubtype()) <<
                  ", length = " << msg.length() << "}" << std::endl;
     switch (msg.getType()) {
     case net::MessageType::Auth: {
-        int32 token = msg.readI32();
-        cout << "AUTH! " << token << endl;
+        switch(msg.getSubtype<net::AuthSubType>())
+        {
+            case net::AuthSubType::Request:{
+                string username = msg.readString();
+                string password = msg.readString();
+                DatabaseConnection db("properties.txt");
+                db.connect();
+                auto results = db.execute("select token,password from users where username='"+username+"';");
+                if(results.empty())
+                {
+                    db.execute("insert into users values ('"+username+"','"+password+"');");
+                    cout << "db" << endl;
+                    results = db.execute("select token from users where username='"+username+"';");
+                    net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Response);
+                    omsg.writeI32(std::stoi(results[0]["token"]));
+                    co.write(omsg);
+                    cout << "Account created for user " << username << endl;
+                }
+                else{
+                    if(password==results[0]["password"])
+                    {
+                        results = db.execute("select token from users where username='"+username+"';");
+                        net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Response);
+                        omsg.writeI32(std::stoi(results[0]["token"]));
+                        co.write(omsg);
+                        cout << "Auth granted for user " << username << endl;
+                    }
+                    else{
+                        net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Denied);
+                        co.write(omsg);
+                        cout << "Auth denied for user " << username << endl;
+                    }
+                }
+
+        }break;
+
+            default:
+                cout << "Auth received with no known SubType" << endl;
+            break;
+        }
+
+       // int32 token = msg.readI32();
+       // cout << "AUTH! " << token << endl;
     } break;
+
+    case net::MessageType::Inventory: {
+        cout << "Inventory requested?"<< endl;
+    } break;
+
     default:
         break;
     }
