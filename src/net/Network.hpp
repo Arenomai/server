@@ -31,6 +31,10 @@ namespace net {
     enum class UserAccountSubType : uint8 {
         Register = 0,
         PassModify = 1,
+        BioModify = 2,
+        NickModify = 3,
+        InfoRequest = 4,
+        InfoResponse = 5,
     };
 
     enum class EventSubType : uint8 {
