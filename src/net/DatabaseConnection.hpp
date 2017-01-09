@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <map>
 
 typedef struct pg_conn PGconn;
 
@@ -16,7 +17,7 @@ public:
     ~DatabaseConnection();
 
     void connect();
-    std::vector<std::string> execute(const std::string &command);
+    std::vector<std::map<std::string, std::string>> execute(const std::string &command);
     void finish();
 
 private:

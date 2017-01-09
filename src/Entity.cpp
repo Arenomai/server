@@ -6,6 +6,4 @@
 
 Entity::Entity() {
     m_uuid = UUID::make();
-    bool isBattle;
-    bool isMeeting;
 }

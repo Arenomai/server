@@ -1,6 +1,7 @@
 #include "DatabaseConnection.hpp"
 
 #include <sstream>
+#include <map>
 
 #include <libpq/libpq-fs.h>
 #include <libpq-fe.h>
@@ -47,25 +48,28 @@ void DatabaseConnection::connect() {
     }
 }
 
-std::vector<std::string> DatabaseConnection::execute(const string &command) {
-    std::vector<std::string> results;
+std::vector<std::map<std::string, std::string>> DatabaseConnection::execute(const string &command) {
+    std::vector<std::map<std::string, std::string>> results;
+
     PGresult *res = PQexec(conn, command.c_str()); // execution de la requête SQL
     int column_count = PQnfields(res);
     std::vector<const char*> column_names(column_count);
     for (int c = 0; c < column_count; ++c) {
       column_names[c] = PQfname(res, c);
     }
-    int line_count = PQntuples(res);
-    std::ostringstream oss;
+
+    const int line_count = PQntuples(res);
     for (int l = 0; l < line_count; ++l) {
-        oss.str("");
-        oss.clear();
+        results.emplace_back();
+        std::map<std::string, std::string> &line = results.back();
         for (int c = 0; c < column_count; ++c) {
-          oss << column_names[c] << '=' << PQgetvalue(res, l, c) << ' ';
+            line.emplace(std::piecewise_construct,
+                std::forward_as_tuple(column_names[c]),
+                std::forward_as_tuple(PQgetvalue(res, l, c)));
         }
-        results.push_back(oss.str());
     }
     PQclear(res);
+
     return results;
 }
 
