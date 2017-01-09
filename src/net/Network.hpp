@@ -29,7 +29,6 @@ namespace net {
     };
 
     enum class UserAccountSubType : uint8 {
-        Register = 0,
         PassModify = 1,
         BioModify = 2,
         NickModify = 3,

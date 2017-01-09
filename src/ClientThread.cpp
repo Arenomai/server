@@ -96,7 +96,6 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                 if(results.empty())
                 {
                     db.execute("insert into users values ('"+username+"','"+password+"');");
-                    cout << "db" << endl;
                     results = db.execute("select token from users where username='"+username+"';");
                     net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Response);
                     omsg.writeI32(std::stoi(results[0]["token"]));
@@ -118,6 +117,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                         cout << "Auth denied for user " << username << endl;
                     }
                 }
+                db.finish();
 
         }break;
 
@@ -128,6 +128,34 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
 
        // int32 token = msg.readI32();
        // cout << "AUTH! " << token << endl;
+    } break;
+
+    case net::MessageType::UserAccount:{
+        switch(msg.getSubtype<net::UserAccountSubType>())
+        {
+            case net::UserAccountSubType::InfoRequest:{
+            net::OutMessage omsg(net::MessageType::UserAccount,(uint8)net::UserAccountSubType::InfoResponse);
+            DatabaseConnection db("properties.txt");
+            ostringstream convert;
+            convert << msg.readI32();
+            db.connect();
+            auto results = db.execute("select nickname,bio from users where token='"s+convert.str()+"';");
+            if(results.empty())
+            {
+                omsg.writeString("");
+                omsg.writeString("");
+            }
+            else
+            {
+                omsg.writeString(results[0]["nickname"]);
+                omsg.writeString(results[0]["bio"]);
+            }
+            co.write(omsg);
+            db.finish();
+            }break;
+
+
+        }
     } break;
 
     case net::MessageType::Inventory: {
