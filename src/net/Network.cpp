@@ -6,6 +6,9 @@
 #include <sstream>
 #include <memory>
 
+// Debug
+#include <iomanip>
+
 #include <goodform/msgpack.hpp>
 
 namespace arn {
@@ -63,6 +66,15 @@ void InMessage::readMsgpack(goodform::variant &var) {
     }
     InMemoryStream ims(getCursorPtr(len), len);
     goodform::msgpack::deserialize(ims, var);
+}
+
+std::string InMessage::dump() const {
+    std::ostringstream oss;
+    oss << std::hex << std::setfill('0') << std::setw(2);
+    for (SizeT i = 0; i < length(); ++i) {
+        oss << static_cast<int>(m_data[i]);
+    }
+    return oss.str();
 }
 
 

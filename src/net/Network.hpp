@@ -97,6 +97,8 @@ public:
     }
 
     void readMsgpack(goodform::variant&);
+
+    std::string dump() const;
 };
 
 class OutMessage : public Message, public io::OutMemoryStream {
