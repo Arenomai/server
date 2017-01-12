@@ -136,12 +136,12 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
             case net::UserAccountSubType::InfoRequest:{
             net::OutMessage omsg(net::MessageType::UserAccount,(uint8)net::UserAccountSubType::InfoResponse);
             DatabaseConnection db("properties.txt");
-            ostringstream convert;
-            convert << msg.readI32();
+            string str = to_string(msg.readI32());
             db.connect();
-            auto results = db.execute("select nickname,bio from users where token='"s+convert.str()+"';");
+            auto results = db.execute("select nickname,bio from accounts where token="s+str+";");
             if(results.empty())
             {
+                cout << "empty" << endl;
                 omsg.writeString("");
                 omsg.writeString("");
             }
@@ -154,12 +154,22 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
             db.finish();
             }break;
 
+        case net::UserAccountSubType::AccountModify:{
+            DatabaseConnection db("properties.txt");
+            db.connect();
+            string nick = msg.readString();
+            string bio = msg.readString();
+            int token = msg.readI32();
+            db.execute("update accounts set (nickname,bio) = ('"+nick+"','"+bio+"') where token ="+to_string(token)+";");
+            db.finish();
+            cout << "Modifié account : " << token << " avec le nick : "<< nick << " et la bio : "<< bio << endl;
+        }break;
 
         }
     } break;
 
     case net::MessageType::Inventory: {
-        cout << "Inventory requested?"<< endl;
+        cout << "Inventory requested"<< endl;
     } break;
 
     default:
