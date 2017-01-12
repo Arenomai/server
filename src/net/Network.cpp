@@ -70,9 +70,10 @@ void InMessage::readMsgpack(goodform::variant &var) {
 
 std::string InMessage::dump() const {
     std::ostringstream oss;
-    oss << std::hex << std::setfill('0') << std::setw(2);
+    char buf[3];
     for (SizeT i = 0; i < length(); ++i) {
-        oss << static_cast<int>(m_data[i]);
+        sprintf(buf, "%02x", static_cast<int>(m_data[i]));
+        oss << buf;
     }
     return oss.str();
 }
