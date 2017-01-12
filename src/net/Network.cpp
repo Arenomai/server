@@ -82,6 +82,7 @@ std::string InMessage::dump() const {
 OutMessage::OutMessage(MessageType t, uint8 subtype) :
     Message(t, subtype),
     m_actualData(nullptr) {
+    fit(0);
 }
 
 OutMessage::~OutMessage() {
@@ -91,15 +92,16 @@ OutMessage::~OutMessage() {
 
 const static int OutMessage_AllocStep = 1024;
 void OutMessage::fit(SizeT len) {
-    if (len <= m_allocated)
+    if (HeaderSize + len <= m_allocated)
         return;
-    SizeT targetSize = ((len + OutMessage_AllocStep - 1) /
+    SizeT targetSize = (((HeaderSize + len) + OutMessage_AllocStep - 1) /
         OutMessage_AllocStep)*OutMessage_AllocStep; // Round up
     using DataT = decltype(m_actualData);
     DataT newActualData = static_cast<DataT>(
-        std::realloc(m_actualData, HeaderSize + targetSize));
-    if (newActualData == nullptr)
+        std::realloc(m_actualData, targetSize));
+    if (newActualData == nullptr) {
         throw std::bad_alloc();
+    }
     m_actualData = newActualData;
     m_data = newActualData + HeaderSize;
     m_allocated = targetSize;
