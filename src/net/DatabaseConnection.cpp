@@ -6,6 +6,7 @@
 #include <libpq/libpq-fs.h>
 #include <libpq-fe.h>
 #include <libpq-events.h>
+#include <sqlca.h>
 
 #include "../SimpleConfig.hpp"
 
@@ -52,6 +53,11 @@ std::vector<std::map<std::string, std::string>> DatabaseConnection::execute(cons
     std::vector<std::map<std::string, std::string>> results;
 
     PGresult *res = PQexec(conn, command.c_str()); // execution de la requête SQL
+
+    if (sqlca.sqlcode != 0) {
+        throw std::runtime_error(sqlca.sqlerrm.sqlerrmc);
+    }
+
     int column_count = PQnfields(res);
     std::vector<const char*> column_names(column_count);
     for (int c = 0; c < column_count; ++c) {
