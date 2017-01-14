@@ -141,7 +141,6 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
             auto results = db.execute("select nickname,bio from accounts where token="s+str+";");
             if(results.empty())
             {
-                cout << "empty" << endl;
                 omsg.writeString("");
                 omsg.writeString("");
             }
@@ -160,9 +159,15 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
             string nick = msg.readString();
             string bio = msg.readString();
             int token = msg.readI32();
-            db.execute("update accounts set (nickname,bio) = ('"+nick+"','"+bio+"') where token ="+to_string(token)+";");
+            auto results = db.execute("select * from accounts where token="+to_string(token)+";");
+            if(results.empty())
+            {
+                db.execute("insert into accounts values ('"+nick+"','"+bio+"',"+to_string(token)+");");
+            }
+            else{
+                db.execute("update accounts set (nickname,bio) = ('"+nick+"','"+bio+"') where token ="+to_string(token)+";");
+            }
             db.finish();
-            cout << "Modifié account : " << token << " avec le nick : "<< nick << " et la bio : "<< bio << endl;
         }break;
 
         }
