@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <sstream>
+#include <random>
+#include <math.h>
 
 #include "net/Network.hpp"
 
@@ -177,6 +179,35 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
         cout << "Inventory requested"<< endl;
     } break;
 
+    case net::MessageType::PosUpdate:{
+        switch(msg.getSubtype<net::PosUpdateSubType>())
+        {
+            case net::PosUpdateSubType::EventGet:
+                {
+                    cout << "pos update requested " << endl;
+                    double lat = msg.readDouble();
+                    double lng = msg.readDouble();
+                    std::random_device rd;
+                    std::mt19937 gen(rd());
+                    std::uniform_int_distribution<> dis(1,10);
+                    int i,j = dis(gen);
+                    dis = std::uniform_int_distribution<> (-100,100);
+                    net::OutMessage omsg(net::MessageType::PosUpdate,(uint8)net::PosUpdateSubType::EventGetResponse);
+                    omsg.writeI32(j);
+                    for(i=0;i<=j;i++)
+                    {
+                        double coeff1 = dis(gen)*0.0000089;;
+                        double coeff2 = dis(gen);
+                        double newlat=lat+coeff1;
+                        double newlng=lng+coeff2/(6378137*cos(M_PI*lat/180))*180/M_PI;
+                        omsg.writeDouble(newlat);
+                        omsg.writeDouble(newlng);
+                    }
+                    co.write(omsg);
+                }
+
+        }
+    }
     default:
         break;
     }

@@ -18,8 +18,9 @@ namespace net {
         Auth = 1,
         Inventory = 2,
         Event = 3,
-        UserAccount = 4
+        UserAccount = 4,
         //ItemDef = 5, will be added later if we have some time left
+        PosUpdate =6,
     };
 
     enum class AuthSubType : uint8 {
@@ -43,6 +44,12 @@ namespace net {
     enum class Inventory : uint8 {
         Request = 0,
         Response = 1
+    };
+
+    enum class PosUpdateSubType : uint8
+    {
+        EventGet = 0,
+        EventGetResponse = 1,
     };
 
 class Message : public virtual io::MemoryStream {
