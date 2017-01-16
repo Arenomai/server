@@ -27,54 +27,59 @@ ClientThread::~ClientThread() {
 }
 
 void ClientThread::run() {
-    cout << "Connected to " << tcpc.address() << ':' << tcpc.port() << endl;
-    {
-        epoll_event evt;
-        evt.events = EPOLLIN | EPOLLHUP | EPOLLRDHUP;
-        evt.data.fd = tcpc.fd();
-        ::epoll_ctl(epoll_fd, EPOLL_CTL_ADD, tcpc.fd(), &evt);
-    }
-    bool cont = true;
-    bool client_asked_disconnect = false;
-    net::InMessage msg;
-    while (cont) {
-        epoll_event epevt;
-        int res = ::epoll_wait(epoll_fd, &epevt, 1, -1);
-        if (res == -1) {
-            throw std::runtime_error("epoll_wait(2) returned -1: "s + strerror(errno));
+    try {
+        cout << "Connected to " << tcpc.address() << ':' << tcpc.port() << endl;
+        {
+            epoll_event evt;
+            evt.events = EPOLLIN | EPOLLHUP | EPOLLRDHUP;
+            evt.data.fd = tcpc.fd();
+            ::epoll_ctl(epoll_fd, EPOLL_CTL_ADD, tcpc.fd(), &evt);
         }
-        // If a fd triggered the end of the waiting period,
-        if (epevt.data.fd == tcpc.fd()) {
-            // it's either the TCP socket; process network data
-            if ((epevt.events & (EPOLLHUP | EPOLLRDHUP)) != 0) {
-                cont = false;
-                client_asked_disconnect = true;
-            } else if ((epevt.events & EPOLLIN) != 0) {
-                while (tcpc.read(msg)) {
-                    processMessage(msg, tcpc);
-                }
+        bool cont = true;
+        bool client_asked_disconnect = false;
+        net::InMessage msg;
+        while (cont) {
+            epoll_event epevt;
+            int res = ::epoll_wait(epoll_fd, &epevt, 1, -1);
+            if (res == -1) {
+                throw std::runtime_error("epoll_wait(2) returned -1: "s + strerror(errno));
             }
-        } else if (epevt.data.fd == evt_fd) {
-            // either the notification event fd; process events
-            std::lock_guard<std::mutex> evt_mtx_guard(evt_mtx);
-            uint64 val;
-            ::read(evt_fd, &val, sizeof(val));
-            while (not evt_queue.empty()) {
-                const Event &evt = evt_queue.front();
-                switch (evt.type) {
-                case Event::Type::Quit:
+            // If a fd triggered the end of the waiting period,
+            if (epevt.data.fd == tcpc.fd()) {
+                // it's either the TCP socket; process network data
+                if ((epevt.events & (EPOLLHUP | EPOLLRDHUP)) != 0) {
                     cont = false;
-                    break;
-                default:
-                    break;
+                    client_asked_disconnect = true;
+                } else if ((epevt.events & EPOLLIN) != 0) {
+                    while (tcpc.read(msg)) {
+                        processMessage(msg, tcpc);
+                    }
                 }
-                evt_queue.pop();
+            } else if (epevt.data.fd == evt_fd) {
+                // either the notification event fd; process events
+                std::lock_guard<std::mutex> evt_mtx_guard(evt_mtx);
+                uint64 val;
+                ::read(evt_fd, &val, sizeof(val));
+                while (not evt_queue.empty()) {
+                    const Event &evt = evt_queue.front();
+                    switch (evt.type) {
+                    case Event::Type::Quit:
+                        cont = false;
+                        break;
+                    default:
+                        break;
+                    }
+                    evt_queue.pop();
+                }
             }
         }
+        cout << "Disconnecting from " << tcpc.address() << ':' << tcpc.port() <<
+            (client_asked_disconnect ? " (client disconnect)": "") << endl;
+        tcpc.disconnect();
+    } catch (const std::runtime_error &e) {
+        cout << "Caught std::runtime_error: " << e.what() << endl;
+        throw e;
     }
-    cout << "Disconnecting from " << tcpc.address() << ':' << tcpc.port() <<
-        (client_asked_disconnect ? " (client disconnect)": "") << endl;
-    tcpc.disconnect();
 }
 
 void ClientThread::start() {
