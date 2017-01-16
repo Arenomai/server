@@ -35,13 +35,6 @@ bool TCPListener::listen() {
             strerror(errno));
     }
 
-    value = 1000;
-    setsockopt_ret = setsockopt(socket_desc, SOL_SOCKET, SO_RCVTIMEO, &value, sizeof(int));
-    if (setsockopt_ret < 0) {
-        throw std::runtime_error("setsockopt(SO_RCVTIMEO) returned " + std::to_string(setsockopt_ret) + ": " +
-            strerror(errno));
-    }
-
     struct sockaddr_in server;
     memset(&server, 0, sizeof(server));
     server.sin_family = AF_INET;
