@@ -53,9 +53,9 @@ std::vector<std::map<std::string, std::string>> DatabaseConnection::execute(cons
 
     PGresult *res = PQexec(conn, command.c_str()); // execution de la requête SQL
 
-    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+    /*if (PQresultStatus(res) != PGRES_COMMAND_OK) {
         throw std::runtime_error(PQresultErrorMessage(res));
-    }
+    }*/
 
     int column_count = PQnfields(res);
     std::vector<const char*> column_names(column_count);
