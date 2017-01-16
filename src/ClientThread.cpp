@@ -82,9 +82,9 @@ void ClientThread::start() {
 }
 
 void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
-    std::cout << "InMessage { type = " << static_cast<uint>(msg.getType()) <<
+    /*std::cout << "InMessage { type = " << static_cast<uint>(msg.getType()) <<
                  ", subtype = " << static_cast<uint>(msg.getSubtype()) <<
-                 ", length = " << msg.length() << "}" << std::endl;
+                 ", length = " << msg.length() << "}" << std::endl;*/
     switch (msg.getType()) {
     case net::MessageType::Auth: {
         switch(msg.getSubtype<net::AuthSubType>())
@@ -139,6 +139,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
             net::OutMessage omsg(net::MessageType::UserAccount,(uint8)net::UserAccountSubType::InfoResponse);
             DatabaseConnection db("properties.txt");
             string str = to_string(msg.readI32());
+            cout << "User account requested for user with token : " << str << endl;
             db.connect();
             auto results = db.execute("select nickname,bio from accounts where token="s+str+";");
             if(results.empty())
@@ -161,6 +162,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
             string nick = msg.readString();
             string bio = msg.readString();
             int token = msg.readI32();
+            cout << "Account modify requested for user with token : " << token << endl;
             auto results = db.execute("select * from accounts where token="+to_string(token)+";");
             if(results.empty())
             {
@@ -184,7 +186,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
         {
             case net::PosUpdateSubType::EventGet:
                 {
-                    cout << "pos update requested " << endl;
+                    cout << "Position update requested for auth user" << endl;
                     double lat = msg.readDouble();
                     double lng = msg.readDouble();
                     std::random_device rd;
