@@ -32,6 +32,9 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 add_executable(${CMAKE_PROJECT_NAME} ${SRCS})
 
+include_directories(
+    "/usr/include/postgresql")
+
 target_link_libraries(${CMAKE_PROJECT_NAME}
   ${GOODFORM_LIBRARY}
   pthread
