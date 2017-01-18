@@ -4,6 +4,7 @@
 #include <sstream>
 #include <random>
 #include <math.h>
+#include <ctime>
 
 #include "net/Network.hpp"
 
@@ -27,6 +28,7 @@ ClientThread::~ClientThread() {
 }
 
 void ClientThread::run() {
+    std::time_t result = std::time(nullptr);
     try {
         cout << "Connected to " << tcpc.address() << ':' << tcpc.port() << endl;
         {
@@ -73,11 +75,11 @@ void ClientThread::run() {
                 }
             }
         }
-        cout << "Disconnecting from " << tcpc.address() << ':' << tcpc.port() <<
+        cout <<std::asctime(std::localtime(&result)) << " Disconnecting from " << tcpc.address() << ':' << tcpc.port() <<
             (client_asked_disconnect ? " (client disconnect)": "") << endl;
         tcpc.disconnect();
     } catch (const std::runtime_error &e) {
-        cout << "Caught std::runtime_error: " << e.what() << endl;
+        cout <<std::asctime(std::localtime(&result))<< " Caught std::runtime_error: " << e.what() << endl;
         throw e;
     }
 }
@@ -95,6 +97,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
         switch(msg.getSubtype<net::AuthSubType>())
         {
             case net::AuthSubType::Request:{
+                std::time_t result = std::time(nullptr);
                 string username = msg.readString();
                 string password = msg.readString();
                 DatabaseConnection db("properties.txt");
@@ -107,7 +110,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                     net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Response);
                     omsg.writeI32(std::stoi(results[0]["token"]));
                     co.write(omsg);
-                    cout << "Account created for user " << username << endl;
+                    cout <<std::asctime(std::localtime(&result))<< " Account created for user " << username << endl;
                 }
                 else{
                     if(password==results[0]["password"])
@@ -116,21 +119,23 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                         net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Response);
                         omsg.writeI32(std::stoi(results[0]["token"]));
                         co.write(omsg);
-                        cout << "Auth granted for user " << username << endl;
+                        cout <<std::asctime(std::localtime(&result))<< " Auth granted for user " << username << endl;
                     }
                     else{
                         net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Denied);
                         co.write(omsg);
-                        cout << "Auth denied for user " << username << endl;
+                        cout <<std::asctime(std::localtime(&result))<< " Auth denied for user " << username << endl;
                     }
                 }
                 db.finish();
 
         }break;
 
-            default:
-                cout << "Auth received with no known SubType" << endl;
-            break;
+        default:{
+                std::time_t result = std::time(nullptr);
+                cout <<std::asctime(std::localtime(&result))<< " Auth received with no known SubType" << endl;
+
+            }break;
         }
 
        // int32 token = msg.readI32();
@@ -141,10 +146,11 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
         switch(msg.getSubtype<net::UserAccountSubType>())
         {
             case net::UserAccountSubType::InfoRequest:{
+            std::time_t result = std::time(nullptr);
             net::OutMessage omsg(net::MessageType::UserAccount,(uint8)net::UserAccountSubType::InfoResponse);
             DatabaseConnection db("properties.txt");
             string str = to_string(msg.readI32());
-            cout << "User account requested for user with token : " << str << endl;
+            cout <<std::asctime(std::localtime(&result))<< " User account requested for user with token : " << str << endl;
             db.connect();
             auto results = db.execute("select nickname,bio from accounts where token="s+str+";");
             if(results.empty())
@@ -162,12 +168,13 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
             }break;
 
         case net::UserAccountSubType::AccountModify:{
+            std::time_t result = std::time(nullptr);
             DatabaseConnection db("properties.txt");
             db.connect();
             string nick = msg.readString();
             string bio = msg.readString();
             int token = msg.readI32();
-            cout << "Account modify requested for user with token : " << token << endl;
+            cout << std::asctime(std::localtime(&result))<< "Account modify requested for user with token : " << token << endl;
             auto results = db.execute("select * from accounts where token="+to_string(token)+";");
             if(results.empty())
             {
@@ -183,7 +190,8 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
     } break;
 
     case net::MessageType::Inventory: {
-        cout << "Inventory requested"<< endl;
+        std::time_t result = std::time(nullptr);
+        cout <<std::asctime(std::localtime(&result))<< " Inventory requested"<< endl;
     } break;
 
     case net::MessageType::PosUpdate:{
@@ -191,7 +199,8 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
         {
             case net::PosUpdateSubType::EventGet:
                 {
-                    cout << "Position update requested for auth user" << endl;
+                    std::time_t result = std::time(nullptr);
+                    cout <<std::asctime(std::localtime(&result))<< " Position update requested for auth user" << endl;
                     double lat = msg.readDouble();
                     double lng = msg.readDouble();
                     std::random_device rd;
