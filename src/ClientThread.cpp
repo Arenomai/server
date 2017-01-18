@@ -179,7 +179,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
             string nick = msg.readString();
             string bio = msg.readString();
             int token = msg.readI32();
-            cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " <<  now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< "Account modify requested for user with token : " << token << endl;
+            cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " <<  now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " Account modify requested for user with token : " << token << endl;
             auto results = db.execute("select * from accounts where token="+to_string(token)+";");
             if(results.empty())
             {
