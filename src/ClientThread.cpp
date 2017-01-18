@@ -31,7 +31,7 @@ void ClientThread::run() {
     time_t t = time(0);   // get time now
     struct tm * now = localtime( & t );
     try {
-        cout << "Connected to " << tcpc.address() << ':' << tcpc.port() << endl;
+        cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec << "Connected to " << tcpc.address() << ':' << tcpc.port() << endl;
         {
             epoll_event evt;
             evt.events = EPOLLIN | EPOLLHUP | EPOLLRDHUP;
@@ -76,7 +76,7 @@ void ClientThread::run() {
                 }
             }
         }
-        cout << now->tm_mday << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec << " Disconnecting from " << tcpc.address() << ':' << tcpc.port() <<
+        cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec << " Disconnecting from " << tcpc.address() << ':' << tcpc.port() <<
             (client_asked_disconnect ? " (client disconnect)": "") << endl;
         tcpc.disconnect();
     } catch (const std::runtime_error &e) {
@@ -207,7 +207,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                 {
                     time_t t = time(0);   // get time now
                     struct tm * now = localtime( & t );
-                    cout <<  now->tm_mday << (now->tm_mon + 1) << '-'  << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " Position update requested for auth user" << endl;
+                    cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " Position update requested for auth user" << endl;
                     double lat = msg.readDouble();
                     double lng = msg.readDouble();
                     std::random_device rd;
