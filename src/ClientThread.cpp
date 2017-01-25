@@ -112,7 +112,15 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                     net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Response);
                     omsg.writeI32(std::stoi(results[0]["token"]));
                     co.write(omsg);
-                    cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " Account created for user " << username << endl;
+                    cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":";
+                    stringstream ss;
+                    ss <<now->tm_min;
+                    if(ss.str().size()<2){
+                        cout<<now->tm_min<<"0"<<":"<<now->tm_sec<< " Account created for user " << username << endl;
+                    }
+                    else{
+                        cout<<now->tm_min<<":"<<now->tm_sec<< " Account created for user " << username << endl;
+                    }
                 }
                 else{
                     if(password==results[0]["password"])
