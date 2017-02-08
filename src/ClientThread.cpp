@@ -28,10 +28,10 @@ ClientThread::~ClientThread() {
 }
 
 void ClientThread::run() {
-    time_t t = time(0);   // get time now
-    struct tm * now = localtime( & t );
     try {
-        cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec << " Connected to " << tcpc.address() << ':' << tcpc.port() << endl;
+        stringstream ss;
+        ss <<" Connected to " << tcpc.address() << ':' << tcpc.port();
+        printInfo(ss.str());
         {
             epoll_event evt;
             evt.events = EPOLLIN | EPOLLHUP | EPOLLRDHUP;
@@ -76,11 +76,14 @@ void ClientThread::run() {
                 }
             }
         }
-        cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec << " Disconnecting from " << tcpc.address() << ':' << tcpc.port() <<
-            (client_asked_disconnect ? " (client disconnect)": "") << endl;
+        ss=stringstream();
+        ss << " Disconnecting from " << tcpc.address() << ':' << tcpc.port() << (client_asked_disconnect ? " (client disconnect)": "");
+        printInfo(ss.str());
         tcpc.disconnect();
     } catch (const std::runtime_error &e) {
-        cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " Caught std::runtime_error: " << e.what() << endl;
+        stringstream ss;
+        ss << " Caught std::runtime_error: " << e.what() << endl;
+        printInfo(ss.str());
         throw e;
     }
 }
@@ -93,13 +96,12 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
     /*std::cout << "InMessage { type = " << static_cast<uint>(msg.getType()) <<
                  ", subtype = " << static_cast<uint>(msg.getSubtype()) <<
                  ", length = " << msg.length() << "}" << std::endl;*/
+    stringstream ss;
     switch (msg.getType()) {
     case net::MessageType::Auth: {
         switch(msg.getSubtype<net::AuthSubType>())
         {
             case net::AuthSubType::Request:{
-                time_t t = time(0);   // get time now
-                struct tm * now = localtime( & t );
                 string username = msg.readString();
                 string password = msg.readString();
                 DatabaseConnection db("properties.txt");
@@ -112,15 +114,9 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                     net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Response);
                     omsg.writeI32(std::stoi(results[0]["token"]));
                     co.write(omsg);
-                    cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":";
-                    stringstream ss;
-                    ss <<now->tm_min;
-                    if(ss.str().size()<2){
-                        cout<<now->tm_min<<"0"<<":"<<now->tm_sec<< " Account created for user " << username << endl;
-                    }
-                    else{
-                        cout<<now->tm_min<<":"<<now->tm_sec<< " Account created for user " << username << endl;
-                    }
+                    ss=stringstream();
+                    ss <<" Account created for user " << username;
+                    printInfo(ss.str());
                 }
                 else{
                     if(password==results[0]["password"])
@@ -129,12 +125,16 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                         net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Response);
                         omsg.writeI32(std::stoi(results[0]["token"]));
                         co.write(omsg);
-                        cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " Auth granted for user " << username << endl;
+                        ss=stringstream();
+                        ss << " Auth granted for user " << username;
+                        printInfo(ss.str());
                     }
                     else{
                         net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Denied);
                         co.write(omsg);
-                        cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " Auth denied for user " << username << endl;
+                        ss=stringstream();
+                        ss << " Auth denied for user " << username;
+                        printInfo(ss.str());
                     }
                 }
                 db.finish();
@@ -142,9 +142,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
         }break;
 
         default:{
-                time_t t = time(0);   // get time now
-                struct tm * now = localtime( & t );
-                cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " Auth received with no known SubType" << endl;
+                printInfo(" Auth received with no known SubType");
 
             }break;
         }
@@ -157,12 +155,12 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
         switch(msg.getSubtype<net::UserAccountSubType>())
         {
             case net::UserAccountSubType::InfoRequest:{
-            time_t t = time(0);   // get time now
-            struct tm * now = localtime( & t );
             net::OutMessage omsg(net::MessageType::UserAccount,(uint8)net::UserAccountSubType::InfoResponse);
             DatabaseConnection db("properties.txt");
             string str = to_string(msg.readI32());
-            cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " User account requested for user with token : " << str << endl;
+            ss=stringstream();
+            ss <<" User account requested for user with token : " << str;
+            printInfo(ss.str());
             db.connect();
             auto results = db.execute("select nickname,bio from accounts where token="s+str+";");
             if(results.empty())
@@ -180,14 +178,14 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
             }break;
 
         case net::UserAccountSubType::AccountModify:{
-            time_t t = time(0);   // get time now
-            struct tm * now = localtime( & t );
             DatabaseConnection db("properties.txt");
             db.connect();
             string nick = msg.readString();
             string bio = msg.readString();
             int token = msg.readI32();
-            cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " <<  now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " Account modify requested for user with token : " << token << endl;
+            ss=stringstream();
+            ss <<" Account modify requested for user with token : " << token;
+            printInfo(ss.str());
             auto results = db.execute("select * from accounts where token="+to_string(token)+";");
             if(results.empty())
             {
@@ -203,9 +201,9 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
     } break;
 
     case net::MessageType::Inventory: {
-        time_t t = time(0);   // get time now
-        struct tm * now = localtime( & t );
-        cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " Inventory requested"<< endl;
+        ss=stringstream();
+        ss <<" Inventory requested";
+        printInfo(ss.str());
     } break;
 
     case net::MessageType::PosUpdate:{
@@ -213,9 +211,9 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
         {
             case net::PosUpdateSubType::EventGet:
                 {
-                    time_t t = time(0);   // get time now
-                    struct tm * now = localtime( & t );
-                    cout << now->tm_mday << "-" << (now->tm_mon + 1) << " " << now->tm_hour<<":"<<now->tm_min<<":"<<now->tm_sec<< " Position update requested for auth user" << endl;
+                    ss=stringstream();
+                    ss <<" Position update requested for authenticated user";
+                    printInfo(ss.str());
                     double lat = msg.readDouble();
                     double lng = msg.readDouble();
                     std::random_device rd;
@@ -227,7 +225,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                     omsg.writeI32(j);
                     for(i=0;i<=j;i++)
                     {
-                        double coeff1 = dis(gen)*0.0000089;;
+                        double coeff1 = dis(gen)*0.0000089;
                         double coeff2 = dis(gen);
                         double newlat=lat+coeff1;
                         double newlng=lng+coeff2/(6378137*cos(M_PI*lat/180))*180/M_PI;
@@ -243,5 +241,49 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
         break;
     }
 }
+void ClientThread::printInfo(std::string msg)
+{
+stringstream ss;
+time_t t = time(0);   // get time now
+struct tm * now = localtime( & t );
+if(now->tm_mday < 10)
+{
+    ss << "0" << now->tm_mday <<"-";
+}
+else{
+    ss << now->tm_mday << "-";
+}
+if((now->tm_mon+1)<10)
+{
+    ss << "0" << (now->tm_mon+1) << " ";
+}
+else{
+    ss << (now->tm_mon+1) << " ";
+}
+if(now->tm_hour < 10)
+{
+    ss << "0" << now->tm_hour<<":";
+}
+else{
+    ss << now->tm_hour<<":";
+}
+if(now->tm_min <10)
+{
+    ss << "0" << now->tm_min <<":";
+}
+else
+{
+    ss << now->tm_min<<":";
+}
+if(now->tm_sec <10)
+{
+    ss << "0" << now->tm_sec <<" ";
+}
+else{
+    ss << now->tm_sec << " ";
+}
+ ss << msg;
+ cout << ss.str() <<endl;
 
+}
 }
