@@ -14,11 +14,10 @@ Installing the dependancies :
 
 *Make sure you have the latest version of your distribution*
 
-```
-sudo apt update
-sudo apt install libpq-dev gcc-6 cmake
-```
+
+> sudo apt update
+> sudo apt install libpq-dev gcc-6 cmake
 
 **Archlinux**
 
-`sudo pacman -S libpqxx gcc cmake`
+`sudo pacman -S postgresql gcc cmake`
