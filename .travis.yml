@@ -1,5 +1,5 @@
 language: cpp
 sudo: true
-before_install: sudo apt-get install libpq
+before_install: sudo apt-get install libpq-dev
 compiler: gcc
 install: mkdir build && cd build && cmake .. && make
