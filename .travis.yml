@@ -17,3 +17,5 @@ matrix:
 sudo: true
 compiler: gcc
 install: cd build && cmake .. && make
+notifications:
+  email: false
