@@ -25,21 +25,25 @@ DatabaseConnection::~DatabaseConnection() {
 void DatabaseConnection::connect() {
     SimpleConfig cfg;
     properties_file.open(file_name);
-    if (properties_file.is_open()) { // récupération des informations de Connection
+
+    if (properties_file.is_open()) { // Retrieving connection informations
         cfg.parseText(properties_file);
         properties_file.close();
     } else {
         throw std::runtime_error("Unable to open file " + file_name);
     }
+
     std::ostringstream oss;
     static const std::array<std::string, 6> entries = {{
       "hostaddr", "host", "port", "dbname", "user", "password"
     }};
+
     for (const std::string &entry : entries) {
       if (not cfg.entries[entry].empty()) {
         oss << entry << '=' << cfg.entries[entry] << ' ';
       }
     }
+
     std::string infos = oss.str();
     const char *conninfo = infos.c_str();
     conn = PQconnectdb(conninfo); // lancement de la Connection
@@ -51,11 +55,7 @@ void DatabaseConnection::connect() {
 std::vector<std::map<std::string, std::string>> DatabaseConnection::execute(const string &command) {
     std::vector<std::map<std::string, std::string>> results;
 
-    PGresult *res = PQexec(conn, command.c_str()); // execution de la requête SQL
-
-    /*if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-        throw std::runtime_error(PQresultErrorMessage(res));
-    }*/
+    PGresult *res = PQexec(conn, command.c_str()); // Executing SQL request
 
     int column_count = PQnfields(res);
     std::vector<const char*> column_names(column_count);
@@ -64,9 +64,11 @@ std::vector<std::map<std::string, std::string>> DatabaseConnection::execute(cons
     }
 
     const int line_count = PQntuples(res);
+
     for (int l = 0; l < line_count; ++l) {
         results.emplace_back();
-        std::map<std::string, std::string> &line = results.back();
+        std::map<std::string, std::string> &line = results.back(); //Retrieving results from the result
+
         for (int c = 0; c < column_count; ++c) {
             line.emplace(std::piecewise_construct,
                 std::forward_as_tuple(column_names[c]),
@@ -80,7 +82,7 @@ std::vector<std::map<std::string, std::string>> DatabaseConnection::execute(cons
 
 void DatabaseConnection::finish() {
     if (conn != nullptr) {
-        PQfinish(conn);
+        PQfinish(conn); // Properly closing PQSQL connection
         conn = nullptr;
     }
 }
