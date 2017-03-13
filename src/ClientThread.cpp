@@ -27,6 +27,11 @@ ClientThread::~ClientThread() {
     ::close(evt_fd);
 }
 
+/*
+ * Main Thread method, executed for each client
+ *
+ */
+
 void ClientThread::run() {
     try {
 
@@ -94,14 +99,22 @@ void ClientThread::run() {
     }
 }
 
+/*
+ * Starts the thread. that's all.
+ * Calls the run() function
+ *
+ */
+
 void ClientThread::start() {
     thread = std::thread(&ClientThread::run, this);
 }
 
+/*
+ * Main function, used to process an user message. Is called each time we receive a message from an user.
+ */
+
 void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
-    /*std::cout << "InMessage { type = " << static_cast<uint>(msg.getType()) <<
-                 ", subtype = " << static_cast<uint>(msg.getSubtype()) <<
-                 ", length = " << msg.length() << "}" << std::endl;*/
+
     stringstream ss;
     switch (msg.getType()) {
     case net::MessageType::Auth: {
@@ -137,6 +150,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                         printInfo(ss.str());
                     }
                     else{ //If the password is not matching an existing username
+
                         net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Denied);
                         co.write(omsg);
                         ss=stringstream();
