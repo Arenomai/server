@@ -1,0 +1,2 @@
+/usr/bin/ar qc libgoodform-static.a  CMakeFiles/goodform-static.dir/src/io.cpp.o CMakeFiles/goodform-static.dir/src/json.cpp.o CMakeFiles/goodform-static.dir/src/msgpack.cpp.o CMakeFiles/goodform-static.dir/src/variant.cpp.o
+/usr/bin/ranlib libgoodform-static.a
