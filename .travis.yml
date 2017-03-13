@@ -12,6 +12,7 @@ matrix:
             - ubuntu-toolchain-r-test
 sudo: true
 before_install: 
+- sudo apt-get install cmake
 - sudo apt-get install libpq-dev
 - sudo apt-get install gcc-6 g++-6
 compiler: gcc
