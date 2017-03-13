@@ -1,3 +1,6 @@
 [submodule "ext/goodform"]
 	path = ext/goodform
 	url = https://github.com/ElementW/goodform.git
+[submodule "ext/plog"]
+	path = ext/plog
+	url = https://github.com/Thgros/plog.git
