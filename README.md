@@ -4,9 +4,11 @@ Server repository.
 
 Dependancies :
 
-	```libpq
-	gcc 6
-	cmake```
+```
+libpq (PostgreSQL C implementation)
+gcc-6
+cmake
+```
 
 Installing the dependancies :
 
@@ -14,8 +16,10 @@ Installing the dependancies :
 
 *Make sure you have the latest version of your distribution*
 
-``sudo apt update
-sudo apt install libpq-dev gcc-6 cmake```
+```
+sudo apt update
+sudo apt install libpq-dev gcc-6 cmake
+```
 
 **Archlinux**
 
