@@ -24,9 +24,3 @@ sudo apt install libpq-dev gcc-6 cmake
 **Archlinux**
 
 `sudo pacman -S libpqxx gcc cmake`
-
-Working implementations :
-    - Database connection.
-    - TCP connection. 
-    - MessagePack.
-    - Auth.
