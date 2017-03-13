@@ -4,11 +4,9 @@ Server repository.
 
 Dependancies :
 
-```
-libpq (PostgreSQL C implementation)
-gcc-6
-cmake
-```
+> libpq (PostgreSQL C implementation)
+> gcc-6
+> cmake
 
 Installing the dependancies :
 
