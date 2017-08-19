@@ -19,7 +19,7 @@ namespace net {
         Inventory = 2,
         Event = 3,
         UserAccount = 4,
-        //ItemDef = 5, will be added later if we have some time left
+        //ItemDef = 5, will be added later
         PosUpdate =6,
     };
 
