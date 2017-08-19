@@ -129,7 +129,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                 auto results = db.execute("select token,password from users where username='"+username+"';");
                 if(results.empty())
                 {
-                    db.execute("insert into users values ('"+username+"','"+password+"');");
+                    db.execute("insert into users (username,password) values ('"+username+"','"+password+"');");
                     results = db.execute("select token from users where username='"+username+"';");
                     net::OutMessage omsg(net::MessageType::Auth,(uint8)net::AuthSubType::Response);
                     omsg.writeI32(std::stoi(results[0]["token"]));
@@ -217,7 +217,7 @@ void ClientThread::processMessage(net::InMessage &msg, net::TCPConnection &co) {
                 auto results = db.execute("select * from accounts where token="+to_string(token)+";");
                 if(results.empty())
                 {
-                    db.execute("insert into accounts values ('"+nick+"','"+bio+"',"+to_string(token)+");");
+                    db.execute("insert into accounts (nickname,bio,token) values ('"+nick+"','"+bio+"',"+to_string(token)+");");
                 }
                 else{
                     db.execute("update accounts set (nickname,bio) = ('"+nick+"','"+bio+"') where token ="+to_string(token)+";");
@@ -294,50 +294,50 @@ void ClientThread::printInfo(std::string msg)
      * TODO : A log file ? Because this is not a system daemon or whatever, we shouldn't log the messages in syslog.
      */
 
-stringstream ss;
-time_t t = time(0);   //Get current time
+    stringstream ss;
+    time_t t = time(0);   //Get current time
 
-struct tm * now = localtime( & t );
+    struct tm * now = localtime( & t );
 
-if(now->tm_mday < 10)
-{
-    ss << "0" << now->tm_mday <<"-";
-}
-else{
-    ss << now->tm_mday << "-";
-}
-if((now->tm_mon+1)<10)
-{
-    ss << "0" << (now->tm_mon+1) << " ";
-}
-else{
-    ss << (now->tm_mon+1) << " ";
-}
-if(now->tm_hour < 10)
-{
-    ss << "0" << now->tm_hour<<":";
-}
-else{
-    ss << now->tm_hour<<":";
-}
-if(now->tm_min <10)
-{
-    ss << "0" << now->tm_min <<":";
-}
-else
-{
-    ss << now->tm_min<<":";
-}
-if(now->tm_sec <10)
-{
-    ss << "0" << now->tm_sec <<" ";
-}
-else{
-    ss << now->tm_sec << " ";
-}
+    if(now->tm_mday < 10)
+    {
+        ss << "0" << now->tm_mday <<"-";
+    }
+    else{
+        ss << now->tm_mday << "-";
+    }
+    if((now->tm_mon+1)<10)
+    {
+        ss << "0" << (now->tm_mon+1) << " ";
+    }
+    else{
+        ss << (now->tm_mon+1) << " ";
+    }
+    if(now->tm_hour < 10)
+    {
+        ss << "0" << now->tm_hour<<":";
+    }
+    else{
+        ss << now->tm_hour<<":";
+    }
+    if(now->tm_min <10)
+    {
+        ss << "0" << now->tm_min <<":";
+    }
+    else
+    {
+        ss << now->tm_min<<":";
+    }
+    if(now->tm_sec <10)
+    {
+        ss << "0" << now->tm_sec <<" ";
+    }
+    else{
+        ss << now->tm_sec << " ";
+    }
 
-ss << msg;
- cout << ss.str() <<endl;
+    ss << msg;
+     cout << ss.str() <<endl;
 
-}
+    }
 }
