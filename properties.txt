@@ -1,6 +1,5 @@
-hostaddr=10.8.0.1
+hostaddr=127.0.0.1
 port=5432
-dbname=jeu
-user=ptut
-password=ptut16jbrt
-
+dbname=arenomai
+user=arenomai
+password=arenomai
