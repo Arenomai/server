@@ -58,6 +58,18 @@ Table creation commands :
 
 At the server root (where the *arenomai* binary is located) a file called properties.txt is needed. An exemple is located in the project root.  
 
+**Exemple :**  
+
+```
+hostaddr=127.0.0.1
+port=5432
+dbname=arenomai
+user=arenomai
+password=arenomai
+```
+
+
+
 **hostaddr** is the ip address of your PostgreSQL server.  
 **port** is the port of your PostgreSQL server.  
 **dbname** is the database name.  
