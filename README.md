@@ -50,16 +50,16 @@ We currently use 2 tables :
 
 Table creation commands :
 
-`CREATE TABLE accounts (nickname text, bio text, token integer unique primary key);`
+`CREATE TABLE accounts (nickname text, bio text, token integer unique primary key);`  
 
 `CREATE TABLE users (token serial primary key, username text unique  not null,password text not null);`
 
 #### 3 - Properties file
 
-At the server root (where the *arenomai* binary is located) a file called properties.txt is needed. An exemple is located in the project root.
+At the server root (where the *arenomai* binary is located) a file called properties.txt is needed. An exemple is located in the project root.  
 
-**hostaddr** is the ip address of your PostgreSQL server.
-**port** is the port of your PostgreSQL server.
-**dbname** is the database name.
-**user** is the PostgreSQL user with the access to the database.
-**password** is the PostgreSQL user's database password (this password should'nt be the same as the UNIX user password). 
+**hostaddr** is the ip address of your PostgreSQL server.  
+**port** is the port of your PostgreSQL server.  
+**dbname** is the database name.  
+**user** is the PostgreSQL user with the access to the database.  
+**password** is the PostgreSQL user's database password (this password should'nt be the same as the UNIX user password).  
