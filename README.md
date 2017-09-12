@@ -2,11 +2,19 @@
 
 Server repository.
 
+## Test Server
+A test server is running at this address : thgros.eu port : 4242
+
+This test server is intended to be used with the current Arenomai 
+version, from this repository.
+
 ## Dependencies
 
 - `libpq` (PostgreSQL C implementation)
 - `gcc` 6+
 - `cmake` 2.8+
+
+
 
 ### Installing dependencies
 
