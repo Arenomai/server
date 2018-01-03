@@ -76,4 +76,4 @@ password=arenomai
 **port** is the port of your PostgreSQL server.  
 **dbname** is the database name.  
 **user** is the PostgreSQL user with the access to the database.  
-**password** is the PostgreSQL user's database password (this password should'nt be the same as the UNIX user password).  
+**password** is the PostgreSQL user's database password (this password should NOT be the same as the UNIX user password).  
